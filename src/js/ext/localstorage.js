@@ -30,6 +30,7 @@ var lsCommandPluginFactory = function(md, emailProcessorBackend) {
       enabled: ko.observable(true)
     };
     saveCmd.execute = function() {
+      console.log('output? ', viewModel.exportHTML());
       saveCmd.enabled(false);
       viewModel.metadata.changed = Date.now();
       if (typeof viewModel.metadata.key == 'undefined') {
