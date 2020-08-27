@@ -1,36 +1,36 @@
-"use strict";
+'use strict';
 /* global global: false */
 
-var $ = require("jquery");
-var ko = require("knockout");
-var console = require("console");
-var performanceAwareCaller = require("./timed-call.js").timedCall;
+var $ = require('jquery');
+var ko = require('knockout');
+var console = require('console');
+var performanceAwareCaller = require('./timed-call.js').timedCall;
 
-var toastr = require("toastr");
+var toastr = require('toastr');
 toastr.options = {
-  "closeButton": false,
-  "debug": false,
-  "positionClass": "toast-bottom-full-width",
-  "target": "#mo-body",
-  "onclick": null,
-  "showDuration": "300",
-  "hideDuration": "1000",
-  "timeOut": "5000",
-  "extendedTimeOut": "1000",
-  "showEasing": "swing",
-  "hideEasing": "linear",
-  "showMethod": "fadeIn",
-  "hideMethod": "fadeOut"
+  'closeButton': false,
+  'debug': false,
+  'positionClass': 'toast-bottom-full-width',
+  'target': '#mo-body',
+  'onclick': null,
+  'showDuration': '300',
+  'hideDuration': '1000',
+  'timeOut': '5000',
+  'extendedTimeOut': '1000',
+  'showEasing': 'swing',
+  'hideEasing': 'linear',
+  'showMethod': 'fadeIn',
+  'hideMethod': 'fadeOut',
 };
 
 function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
 
   var viewModel = {
     galleryRecent: ko.observableArray([]).extend({
-      paging: 16
+      paging: 16,
     }),
     galleryRemote: ko.observableArray([]).extend({
-      paging: 16
+      paging: 16,
     }),
     selectedBlock: ko.observable(null),
     selectedItem: ko.observable(null),
@@ -46,10 +46,10 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     showGallery: ko.observable(false),
     debug: ko.observable(false),
     contentListeners: ko.observable(0),
-    
+
     logoPath: 'rs/img/mosaico32.png',
     logoUrl: '.',
-    logoAlt: 'mosaico'
+    logoAlt: 'mosaico',
   };
 
   // viewModel.content = content._instrument(ko, content, undefined, true);
@@ -59,7 +59,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   viewModel.notifier = toastr;
 
   // Does token substitution in i18next style
-  viewModel.tt = function(key, paramObj) {
+  viewModel.tt = function (key, paramObj) {
     if (typeof paramObj !== 'undefined')
       for (var prop in paramObj)
         if (paramObj.hasOwnProperty(prop)) {
@@ -77,17 +77,17 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   // currently called by editor.html to translate template-defined keys (label, help, descriptions)
   // the editor always uses the "template" category for that strings.
   // you can override this method as you like in order to provide translation or change the strings in any way.
-  viewModel.ut = function(category, key) {
+  viewModel.ut = function (category, key) {
     return key;
   };
 
   viewModel.templatePath = thumbPathConverter;
 
-  viewModel.remoteUrlProcessor = function(url) {
+  viewModel.remoteUrlProcessor = function (url) {
     return url;
   };
 
-  viewModel.remoteFileProcessor = function(fileObj) {
+  viewModel.remoteFileProcessor = function (fileObj) {
     if (typeof fileObj.url !== 'undefined') fileObj.url = viewModel.remoteUrlProcessor(fileObj.url);
     if (typeof fileObj.thumbnailUrl !== 'undefined') fileObj.thumbnailUrl = viewModel.remoteUrlProcessor(fileObj.thumbnailUrl);
     // deleteUrl?
@@ -95,29 +95,29 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // toolbox.tmpl.html
-  viewModel.loadGallery = function() {
+  viewModel.loadGallery = function () {
     viewModel.galleryLoaded('loading');
     var url = galleryUrl ? galleryUrl : '/upload/';
     // retrieve the full list of remote files
-    $.getJSON(url, function(data) {
+    $.getJSON(url, function (data) {
       for (var i = 0; i < data.files.length; i++) data.files[i] = viewModel.remoteFileProcessor(data.files[i]);
       viewModel.galleryLoaded(data.files.length);
       // TODO do I want this call to return relative paths? Or just absolute paths?
       viewModel.galleryRemote(data.files.reverse());
-    }).fail(function() {
+    }).fail(function () {
       viewModel.galleryLoaded(false);
       viewModel.notifier.error(viewModel.t('Unexpected error listing files'));
     });
   };
 
   // img-wysiwyg.tmpl.html
-  viewModel.fileToImage = function(obj, event, ui) {
+  viewModel.fileToImage = function (obj, event, ui) {
     // console.log("fileToImage", obj);
     return obj.url;
   };
 
   // block-wysiwyg.tmpl.html
-  viewModel.removeBlock = function(data, parent) {
+  viewModel.removeBlock = function (data, parent) {
     // let's unselect the block
     if (ko.utils.unwrapObservable(viewModel.selectedBlock) == ko.utils.unwrapObservable(data)) {
       viewModel.selectBlock(null, true);
@@ -129,7 +129,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // block-wysiwyg.tmpl.html
-  viewModel.duplicateBlock = function(index, parent) {
+  viewModel.duplicateBlock = function (index, parent) {
     var idx = ko.utils.unwrapObservable(index);
     // Deinstrument/deobserve the object
     var unwrapped = ko.toJS(ko.utils.unwrapObservable(parent.blocks)[idx]);
@@ -140,7 +140,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // block-wysiwyg.tmpl.html
-  viewModel.moveBlock = function(index, parent, up) {
+  viewModel.moveBlock = function (index, parent, up) {
     var idx = ko.utils.unwrapObservable(index);
     var parentBlocks = ko.utils.unwrapObservable(parent.blocks);
     if ((up && idx > 0) || (!up && idx < parentBlocks.length - 1)) {
@@ -154,7 +154,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // test method, command line use only
-  viewModel.loadDefaultBlocks = function() {
+  viewModel.loadDefaultBlocks = function () {
     // cloning the whole "mainBlocks" object so that undomanager will
     // see it as a single operation (maybe I could use "startMultiple"/"stopMultiple".
     var res = ko.toJS(viewModel.content().mainBlocks);
@@ -170,7 +170,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // gallery-images.tmpl.html
-  viewModel.addImage = function(img) {
+  viewModel.addImage = function (img) {
     var selectedImg = $('#main-wysiwyg-area .selectable-img.selecteditem');
     if (selectedImg.length == 1 && typeof img == 'object' && typeof img.url !== 'undefined') {
       ko.contextFor(selectedImg[0])._src(img.url);
@@ -181,7 +181,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // toolbox.tmpl.html
-  viewModel.addBlock = function(obj, event) {
+  viewModel.addBlock = function (obj, event) {
     // if there is a selected block we try to add the block just after the selected one.
     var selected = viewModel.selectedBlock();
     // search the selected block position.
@@ -200,13 +200,13 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
       pos = found + 1;
       viewModel.content().mainBlocks().blocks.splice(pos, 0, obj);
       viewModel.notifier.info(viewModel.t('New block added after the selected one (__pos__)', {
-        pos: pos
+        pos: pos,
       }));
     } else {
       viewModel.content().mainBlocks().blocks.push(obj);
       pos = viewModel.content().mainBlocks().blocks().length - 1;
       viewModel.notifier.info(viewModel.t('New block added at the model bottom (__pos__)', {
-        pos: pos
+        pos: pos,
       }));
     }
     // find the newly added block and select it!
@@ -217,7 +217,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // Used by stylesheet.js to create multiple styles
-  viewModel.findObjectsOfType = function(data, type) {
+  viewModel.findObjectsOfType = function (data, type) {
     var res = [];
     var obj = ko.utils.unwrapObservable(data);
     for (var prop in obj)
@@ -254,25 +254,25 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
 
   // Attempt to insert the block in the destination layout during dragging
   viewModel.placeholderHelper = {
-    element: function(currentItem) {
+    element: function (currentItem) {
       return $(currentItem[0].outerHTML).removeClass('ui-draggable').addClass('sortable-placeholder').css('display', 'block').css('position', 'relative').css('width', '100%').css('height', 'auto').css('opacity', '.8')[0];
     },
-    update: function(container, p) {
+    update: function (container, p) {
       return;
-    }
+    },
   };
 
   // TODO the undumanager should be pluggable.
   // Used by "moveBlock" and blocks-wysiwyg.tmpl.html to "merge" drag/drop operations into a single undo/redo op.
-  viewModel.startMultiple = function() {
+  viewModel.startMultiple = function () {
     if (typeof viewModel.setUndoModeMerge !== 'undefined') viewModel.setUndoModeMerge();
   };
-  viewModel.stopMultiple = function() {
+  viewModel.stopMultiple = function () {
     if (typeof viewModel.setUndoModeOnce !== 'undefined') viewModel.setUndoModeOnce();
   };
 
   // Used by code generated by editor.js 
-  viewModel.localGlobalSwitch = function(prop, globalProp) {
+  viewModel.localGlobalSwitch = function (prop, globalProp) {
     var current = prop();
     if (current === null) prop(globalProp());
     else prop(null);
@@ -280,7 +280,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // Used by editor and main "converter" to support item selection
-  viewModel.selectItem = function(valueAccessor, item, block) {
+  viewModel.selectItem = function (valueAccessor, item, block) {
     var val = ko.utils.peekObservable(valueAccessor);
     if (typeof block !== 'undefined') viewModel.selectBlock(block, false, true);
     if (val != item) {
@@ -291,11 +291,11 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     return false;
   }.bind(viewModel, viewModel.selectedItem);
 
-  viewModel.isSelectedItem = function(item) {
+  viewModel.isSelectedItem = function (item) {
     return viewModel.selectedItem() == item;
   };
 
-  viewModel.selectBlock = function(valueAccessor, item, doNotSelect, doNotUnselectItem) {
+  viewModel.selectBlock = function (valueAccessor, item, doNotSelect, doNotUnselectItem) {
     var val = ko.utils.peekObservable(valueAccessor);
     if (!doNotUnselectItem) viewModel.selectItem(null);
     if (val != item) {
@@ -307,23 +307,23 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   }.bind(viewModel, viewModel.selectedBlock);
 
   // DEBUG
-  viewModel.countSubscriptions = function(model, debug) {
+  viewModel.countSubscriptions = function (model, debug) {
     var res = 0;
     for (var prop in model)
       if (model.hasOwnProperty(prop)) {
         var p = model[prop];
         if (ko.isObservable(p)) {
           if (typeof p._defaultComputed != 'undefined') {
-            if (typeof debug != 'undefined') console.log(debug + "/" + prop + "/_", p._defaultComputed.getSubscriptionsCount());
+            if (typeof debug != 'undefined') console.log(debug + '/' + prop + '/_', p._defaultComputed.getSubscriptionsCount());
             res += p._defaultComputed.getSubscriptionsCount();
           }
-          if (typeof debug != 'undefined') console.log(debug + "/" + prop + "/-", p.getSubscriptionsCount());
+          if (typeof debug != 'undefined') console.log(debug + '/' + prop + '/-', p.getSubscriptionsCount());
           res += p.getSubscriptionsCount();
           p = ko.utils.unwrapObservable(p);
         }
         if (typeof p == 'object' && p !== null) {
-          var tot = viewModel.countSubscriptions(p, typeof debug != 'undefined' ? debug + '/' + prop + "@" : undefined);
-          if (typeof debug != 'undefined') console.log(debug + "/" + prop + "@", tot);
+          var tot = viewModel.countSubscriptions(p, typeof debug != 'undefined' ? debug + '/' + prop + '@' : undefined);
+          if (typeof debug != 'undefined') console.log(debug + '/' + prop + '@', tot);
           res += tot;
         }
       }
@@ -331,31 +331,31 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   // DEBUG
-  viewModel.loopSubscriptionsCount = function() {
+  viewModel.loopSubscriptionsCount = function () {
     var count = viewModel.countSubscriptions(viewModel.content());
     global.document.getElementById('subscriptionsCount').innerHTML = count;
     global.setTimeout(viewModel.loopSubscriptionsCount, 1000);
   };
 
-  viewModel.export = function() {
-    var content = performanceAwareCaller("exportHTML", viewModel.exportHTML);
+  viewModel.export = function () {
+    var content = performanceAwareCaller('exportHTML', viewModel.exportHTML);
     return content;
   };
 
   function conditional_restore(html) {
-    return html.replace(/<replacedcc[^>]* condition="([^"]*)"[^>]*>([\s\S]*?)<\/replacedcc>/g, function(match, condition, body) {
-      var dd = '<!--[if '+condition.replace(/&amp;/, '&')+']>';
+    return html.replace(/<replacedcc[^>]* condition="([^"]*)"[^>]*>([\s\S]*?)<\/replacedcc>/g, function (match, condition, body) {
+      var dd = '<!--[if ' + condition.replace(/&amp;/, '&') + ']>';
       dd += body.replace(/(<\/cc>)?<!-- cc:ac:([A-Za-z:]*) -->/g, '</$2>') // restore closing tags (including lost tags)
-            .replace(/><!-- cc:sc -->/g, '/>') // restore selfclosing tags
-            .replace(/<!-- cc:bo:([A-Za-z:]*) --><cc/g, '<$1') // restore open tags
-            .replace(/^.*<!-- cc:start -->/,'') // remove content before start
-            .replace(/<!-- cc:end -->.*$/,''); // remove content after end
+        .replace(/><!-- cc:sc -->/g, '/>') // restore selfclosing tags
+        .replace(/<!-- cc:bo:([A-Za-z:]*) --><cc/g, '<$1') // restore open tags
+        .replace(/^.*<!-- cc:start -->/, '') // remove content before start
+        .replace(/<!-- cc:end -->.*$/, ''); // remove content after end
       dd += '<![endif]-->';
       return dd;
     });
   }
 
-  viewModel.exportHTML = function() {
+  viewModel.exportHTML = function () {
     var id = 'exportframe';
     $('body').append('<iframe id="' + id + '" data-bind="bindIframe: $data"></iframe>');
     var frameEl = global.document.getElementById(id);
@@ -368,11 +368,11 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     // Obsolete method didn't work on IE11 when using "HTML5 doctype":
     // var docType = new XMLSerializer().serializeToString(global.document.doctype);
     var node = frameEl.contentWindow.document.doctype;
-    var docType = "<!DOCTYPE " + node.name +
+    var docType = '<!DOCTYPE ' + node.name +
       (node.publicId ? ' PUBLIC "' + node.publicId + '"' : '') +
       (!node.publicId && node.systemId ? ' SYSTEM' : '') +
       (node.systemId ? ' "' + node.systemId + '"' : '') + '>';
-    var content = docType + "\n" + frameEl.contentWindow.document.documentElement.outerHTML;
+    var content = docType + '\n' + frameEl.contentWindow.document.documentElement.outerHTML;
     ko.removeNode(frameEl);
 
     content = content.replace(/<script ([^>]* )?type="text\/html"[^>]*>[\s\S]*?<\/script>/gm, '');
@@ -401,48 +401,48 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     content = conditional_restore(content);
     var trash = content.match(/ data-[^ =]+(="[^"]+")? /) || content.match(/ replaced([^= ]*=)/);
     if (trash) {
-      console.warn("Output HTML contains unexpected data- attributes or replaced attributes", trash);
+      console.warn('Output HTML contains unexpected data- attributes or replaced attributes', trash);
     }
 
     return content;
   };
 
-  viewModel.exportHTMLtoTextarea = function(textareaid) {
+  viewModel.exportHTMLtoTextarea = function (textareaid) {
     $(textareaid).val(viewModel.exportHTML());
   };
 
-  viewModel.exportJSONtoTextarea = function(textareaid) {
+  viewModel.exportJSONtoTextarea = function (textareaid) {
     $(textareaid).val(viewModel.exportJSON());
   };
 
-  viewModel.importJSONfromTextarea = function(textareaid) {
+  viewModel.importJSONfromTextarea = function (textareaid) {
     viewModel.importJSON($(textareaid).val());
   };
 
-  viewModel.exportMetadata = function() {
+  viewModel.exportMetadata = function () {
     var json = ko.toJSON(viewModel.metadata);
     return json;
   };
 
-  viewModel.exportJSON = function() {
+  viewModel.exportJSON = function () {
     var json = ko.toJSON(viewModel.content);
     return json;
   };
 
-  viewModel.exportJS = function() {
+  viewModel.exportJS = function () {
     return ko.toJS(viewModel.content);
   };
 
-  viewModel.importJSON = function(json) {
+  viewModel.importJSON = function (json) {
     var unwrapped = ko.utils.parseJson(json);
     viewModel.content._wrap(unwrapped);
   };
 
-  viewModel.exportTheme = function() {
+  viewModel.exportTheme = function () {
     var flat = {};
     var mod = viewModel.content().theme();
 
-    var _export = function(prefix, flat, mod) {
+    var _export = function (prefix, flat, mod) {
       for (var prop in mod)
         if (mod.hasOwnProperty(prop)) {
           var a = ko.utils.unwrapObservable(mod[prop]);
@@ -459,7 +459,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     var output = '';
     for (var prop in flat)
       if (flat.hasOwnProperty(prop) && prop != 'type') {
-        output += prop + ": " + flat[prop] + ";" + "\n";
+        output += prop + ': ' + flat[prop] + ';' + '\n';
       }
 
     return output;
@@ -470,7 +470,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   // viewModel.editImage = function(src, done) {} : implement this method to enable image editing (src is a wirtableObservable).
   // viewModel.linkDialog = function() {}: implement this method using "this" to find the input element $(this).val is a writableObservable.
 
-  viewModel.loadImage = function(img) {
+  viewModel.loadImage = function (img) {
     // push image at top of "recent" gallery
     viewModel.galleryRecent.unshift(img);
     // select recent gallery tab
@@ -479,21 +479,21 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
 
   // you can ovverride this method if you want to browse images using an external tool
   // if you call _src(yourSrc) you will set a new source for the image.
-  viewModel.selectImage = function(_src) {
+  viewModel.selectImage = function (_src) {
     viewModel.showGallery(true);
   };
 
-  viewModel.dialog = function(selector, options) {
+  viewModel.dialog = function (selector, options) {
     $(selector).dialog(options);
   };
 
   // Dummy log method overridden by extensions
-  viewModel.log = function(category, msg) {
+  viewModel.log = function (category, msg) {
     // console.log("viewModel.log", category, msg);
   };
 
   // automatically load the gallery when the gallery tab is selected
-  viewModel.selectedImageTab.subscribe(function(newValue) {
+  viewModel.selectedImageTab.subscribe(function (newValue) {
     if (newValue == 1 && viewModel.galleryLoaded() === false) {
       viewModel.loadGallery();
     }

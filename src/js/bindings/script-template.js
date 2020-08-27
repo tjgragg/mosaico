@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+
 /* globals global: false */
 
 function pushTemplate(templateName, templateText) {
@@ -14,7 +15,8 @@ function removeTemplate(templateName) {
   if (el) el.parentNode.removeChild(el);
 }
 
-function init() {}
+function init() {
+}
 
 function getTemplateContent(id) {
   var el = global.document.getElementById(id);
@@ -26,5 +28,5 @@ module.exports = {
   init: init,
   addTemplate: pushTemplate,
   removeTemplate: removeTemplate,
-  getTemplateContent: getTemplateContent
+  getTemplateContent: getTemplateContent,
 };

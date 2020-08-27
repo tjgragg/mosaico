@@ -16,6 +16,7 @@ input[type=range].number-slider {
   &::-moz-range-track {
     .slider-track;
   }
+
   &::-moz-range-thumb {
     .slider-thumb;
   }
@@ -24,6 +25,7 @@ input[type=range].number-slider {
     .slider-track;
     margin: 0;
   }
+
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     .slider-thumb;
@@ -38,15 +40,18 @@ input[type=range].number-slider {
     color: transparent; // removes tick marks
     height: @slider-height;
   }
+
   &::-ms-thumb {
     .slider-thumb;
     margin-top: 2px;
     margin-right: 1px;
   }
+
   &::-ms-fill-lower, &::-ms-fill-upper {
     .slider-track;
     margin: 0;
   }
+
   &::-ms-tooltip {
     display: none;
   }

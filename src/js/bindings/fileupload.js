@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* global global: false, Image: false */
 
 // This module depends on those files, but it doesn't have a direct dependency, so we don't require them here.
@@ -10,16 +10,16 @@
 //require("jquery-file-upload/js/jquery.fileupload-image.js");
 //require("jquery-file-upload/js/jquery.fileupload-validate.js");
 
-var $ = require("jquery");
-var ko = require("knockout");
-var console = require("console");
+var $ = require('jquery');
+var ko = require('knockout');
+var console = require('console');
 
 ko.bindingHandlers['fudroppable'] = {
-  init: function(element, valueAccessor) {
+  init: function (element, valueAccessor) {
     var opt = valueAccessor() || {};
     var timeoutsObj = {};
 
-    var over = function(timeouts, dropZoneTimeout, element, className, observable, event) {
+    var over = function (timeouts, dropZoneTimeout, element, className, observable, event) {
 
       if (!timeouts[dropZoneTimeout]) {
         if (typeof className !== 'undefined') {
@@ -32,7 +32,7 @@ ko.bindingHandlers['fudroppable'] = {
         global.clearTimeout(timeouts[dropZoneTimeout]);
       }
 
-      var stop = function() {
+      var stop = function () {
         timeouts[dropZoneTimeout] = null;
         if (typeof className !== 'undefined') {
           element.classList.remove(className);
@@ -57,17 +57,19 @@ ko.bindingHandlers['fudroppable'] = {
       // dragenter and dragleave are not required but they speedup feedback when used.
       ko.utils.registerEventHandler(element, 'dragover dragenter dragleave', over.bind(undefined, timeoutsObj, 'hoverTimeout', element, opt.hoverClass, undefined));
     }
-  }
+  },
 };
 
 ko.bindingHandlers['fileupload'] = {
   extendOptions: {},
-  remoteFilePreprocessor: function(url) { return url; },
-  init: function(element, valueAccessor) {
+  remoteFilePreprocessor: function (url) {
+    return url;
+  },
+  init: function (element, valueAccessor) {
     // TODO domnodedisposal doesn't work when the upload is done by "clicking"
     // Probably jquery-fileupload moves the DOM somewhere else so that KO doesn't 
     // detect the removal anymore.
-    ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+    ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
       $(element).fileupload('destroy');
     });
 
@@ -84,7 +86,7 @@ ko.bindingHandlers['fileupload'] = {
       $(element).attr('title', '');
   },
 
-  update: function(element, valueAccessor) {
+  update: function (element, valueAccessor) {
     var options = valueAccessor() || {};
 
     var $fu = $(element);
@@ -132,8 +134,8 @@ ko.bindingHandlers['fileupload'] = {
         min_height: 'Image requires a minimum height',
         abort: 'File upload aborted',
         image_resize: 'Failed to resize image',
-        generic: 'Unexpected upload error'
-      }
+        generic: 'Unexpected upload error',
+      },
     });
 
     ko.utils.extend(options, ko.bindingHandlers['fileupload'].extendOptions);
@@ -141,7 +143,7 @@ ko.bindingHandlers['fileupload'] = {
     var working = 0;
     var firstWorked = '';
 
-    var cleanup = function() {
+    var cleanup = function () {
       if (--working === 0) {
         if (dataValue) {
           dataValue(firstWorked);
@@ -151,12 +153,12 @@ ko.bindingHandlers['fileupload'] = {
           $parent.find('img').show();
           $parent.find('canvas').remove();
         }
-        $parent.removeClass("uploading");
+        $parent.removeClass('uploading');
         $parent.find('.progress-bar').css('width', 0);
       }
     };
 
-    var translatedMessage = function(text) {
+    var translatedMessage = function (text) {
       if (typeof options.messages == 'object' && options.messages !== null) {
         var match = text.match(/^([^ ]+)(.*)$/);
         if (match) {
@@ -171,12 +173,12 @@ ko.bindingHandlers['fileupload'] = {
     $fu.fileupload(options);
 
     var events = ['fileuploadadd', 'fileuploadprocessalways', 'fileuploadprogressall', 'fileuploaddone', 'fileuploadfail'];
-    var eventHandler = function(e, data) {
+    var eventHandler = function (e, data) {
       if (e.type == 'fileuploadadd') {
         working++;
       }
       if (e.type == 'fileuploadfail') {
-        console.log("fileuploadfail", e, data);
+        console.log('fileuploadfail', e, data);
         if (options.onerror) {
           if (data.errorThrown === '' && data.textStatus == 'error') {
             options.onerror(translatedMessage('generic'));
@@ -206,13 +208,13 @@ ko.bindingHandlers['fileupload'] = {
             cleanup();
           }
         } else if (typeof data.result.files[0].error !== 'undefined') {
-          console.log("remote error", e, data);
+          console.log('remote error', e, data);
           if (options.onerror) {
             options.onerror(translatedMessage(data.result.files[0].error));
           }
           cleanup();
         } else {
-          console.log("unexpected error", e, data);
+          console.log('unexpected error', e, data);
           if (options.onerror) {
             options.onerror(translatedMessage('generic (Unexpected Error retrieving uploaded file)'));
           }
@@ -230,7 +232,7 @@ ko.bindingHandlers['fileupload'] = {
               $parent.find('img').hide();
               $parent.prepend(el);
             }
-            $parent.addClass("uploading");
+            $parent.addClass('uploading');
             $parent.find('.progress-bar').css('width', 0);
           }
         }
@@ -255,5 +257,5 @@ ko.bindingHandlers['fileupload'] = {
     if (!$.support.fileInput) {
       $fu.prop('disabled', true).parent().addClass('disabled');
     }
-  }
+  },
 };

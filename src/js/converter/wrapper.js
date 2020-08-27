@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 // This is complex code to handle "live" model instrumentation and dependency tracking.
 // This adds _wrap and _unwrap methods to the model and also instrument the block list so to automatically
 // wrap/upwrap objects on simple array methods (push, splice)
 
-var ko = require("knockout");
-var console = require("console");
+var ko = require('knockout');
+var console = require('console');
 
 function wrap(v) {
   var typeOfv = typeof v;
@@ -18,14 +18,14 @@ function wrap(v) {
     }
   }
 
-  if (typeOfv == "array") {
+  if (typeOfv == 'array') {
 
     var r = ko.observableArray();
     if (!v || v.length === 0) return r;
     for (var i = 0, l = v.length; i < l; ++i) r.push(wrap(v[i]));
     return r;
 
-  } else if (typeOfv == "object") {
+  } else if (typeOfv == 'object') {
 
     var t = {};
     for (var k in v) {
@@ -49,7 +49,7 @@ function wrap(v) {
 
 // TODO the "select widget" uses its own _getOptionsObject to read and parse the "option" string
 //      we should merge the logic.
-var _getOptionsObjectKeys = function(options) {
+var _getOptionsObjectKeys = function (options) {
   var optionsCouples = options.split('|');
   var opts = [];
   for (var i = 0; i < optionsCouples.length; i++) {
@@ -60,9 +60,9 @@ var _getOptionsObjectKeys = function(options) {
 };
 
 // generate a computed variable handling the fallback to theme variable
-var _makeComputed = function(target, def, nullIfEqual, schemeSelector, themePath, themes) {
+var _makeComputed = function (target, def, nullIfEqual, schemeSelector, themePath, themes) {
   var res = ko.computed({
-    'read': function() {
+    'read': function () {
       var val = target();
       if (val === null) {
         var scheme = ko.utils.unwrapObservable(schemeSelector);
@@ -75,7 +75,7 @@ var _makeComputed = function(target, def, nullIfEqual, schemeSelector, themePath
         return val;
       }
     },
-    'write': function(value) {
+    'write': function (value) {
       var scheme = ko.utils.unwrapObservable(schemeSelector);
       var defVal;
       if (typeof scheme == 'undefined' || scheme == 'custom') {
@@ -92,12 +92,12 @@ var _makeComputed = function(target, def, nullIfEqual, schemeSelector, themePath
         if (value != defVal || current !== null) target(value);
       }
 
-    }
+    },
   });
   return res;
 };
 
-var _nextVariantFunction = function(ko, prop, variants) {
+var _nextVariantFunction = function (ko, prop, variants) {
   var currentValue = ko.utils.unwrapObservable(prop);
   var variantValue;
 
@@ -107,7 +107,7 @@ var _nextVariantFunction = function(ko, prop, variants) {
   }
 
   if (i == variants.length) {
-    console.warn("Didn't find a variant!", prop, currentValue, variants);
+    console.warn('Didn\'t find a variant!', prop, currentValue, variants);
     i = variants.length - 1;
   }
 
@@ -118,12 +118,12 @@ var _nextVariantFunction = function(ko, prop, variants) {
   prop(nextValue);
 };
 
-var _getVariants = function(def) {
+var _getVariants = function (def) {
   var variantProp = def._variant;
   var variantOptions;
   if (typeof def[variantProp] !== 'object' || typeof def[variantProp]._widget === 'undefined' || (typeof def[variantProp]._options !== 'string' && def[variantProp]._widget !== 'boolean')) {
-    console.error("Unexpected variant declaration", variantProp, def[variantProp]);
-    throw "Unexpected variant declaration: cannot find property " + variantProp + " or its _options string and it is not a boolean";
+    console.error('Unexpected variant declaration', variantProp, def[variantProp]);
+    throw 'Unexpected variant declaration: cannot find property ' + variantProp + ' or its _options string and it is not a boolean';
   }
   if (typeof def[variantProp]._options == 'string') {
     variantOptions = _getOptionsObjectKeys(def[variantProp]._options);
@@ -133,17 +133,17 @@ var _getVariants = function(def) {
   return variantOptions;
 };
 
-var _makeComputedFunction = function(def, defs, thms, ko, contentModel, isContent, t) {
+var _makeComputedFunction = function (def, defs, thms, ko, contentModel, isContent, t) {
   if (typeof def == 'undefined') {
     if (typeof ko.utils.unwrapObservable(t).type === 'undefined') {
-      console.error("Found a non-typed def ", def, t);
-      throw "Found a non-typed def " + def;
+      console.error('Found a non-typed def ', def, t);
+      throw 'Found a non-typed def ' + def;
     }
     var type = ko.utils.unwrapObservable(ko.utils.unwrapObservable(t).type);
     def = defs[type];
     if (typeof def !== 'object') {
-      console.error("Found a non-object def ", def, "for", type);
-      throw "Found a non-object def " + def;
+      console.error('Found a non-object def ', def, 'for', type);
+      throw 'Found a non-object def ' + def;
     }
   }
 
@@ -164,13 +164,13 @@ var _makeComputedFunction = function(def, defs, thms, ko, contentModel, isConten
           path = pp[p].substr(selfPath.length);
           vm = contentModel;
         } else {
-          throw "UNEXPECTED globalStyle path (" + pp[p] + ") outside selfPath (" + selfPath + ")";
+          throw 'UNEXPECTED globalStyle path (' + pp[p] + ') outside selfPath (' + selfPath + ')';
         }
         if (schemePathOrig.substr(0, selfPath.length) == selfPath) {
           schemePath = schemePathOrig.substr(selfPath.length);
         } else {
           // Debug this scenario if it happens
-          console.log("Scheme path doesn't match selfPath", schemePathOrig, selfPath);
+          console.log('Scheme path doesn\'t match selfPath', schemePathOrig, selfPath);
           schemePath = schemePathOrig;
         }
 
@@ -202,7 +202,7 @@ var _makeComputedFunction = function(def, defs, thms, ko, contentModel, isConten
           target = ko.utils.unwrapObservable(target)[tParts[i2]];
         }
 
-        if (!ko.isObservable(target)) throw "Unexpected non observable target " + p + "/" + themePath;
+        if (!ko.isObservable(target)) throw 'Unexpected non observable target ' + p + '/' + themePath;
 
         target._defaultComputed = _makeComputed(target, vm, nullIfEqual, schemeSelector, themePath, thms);
       }
@@ -216,12 +216,12 @@ var _makeComputedFunction = function(def, defs, thms, ko, contentModel, isConten
       pTarget = ko.utils.unwrapObservable(pTarget)[pParts[i4]];
     }
     if (typeof pTarget._defaultComputed != 'undefined') {
-      console.log("Found variant on a style property: beware variants should be only used on content properties because they don't match the theme fallback behaviour", def._variant);
+      console.log('Found variant on a style property: beware variants should be only used on content properties because they don\'t match the theme fallback behaviour', def._variant);
       pTarget = pTarget._defaultComputed;
     }
     if (typeof pTarget == 'undefined') {
-      console.error("Error looking for variant target", def._variant, t);
-      throw "Error looking for variant target " + def._variant;
+      console.error('Error looking for variant target', def._variant, t);
+      throw 'Error looking for variant target ' + def._variant;
     }
     pParent._nextVariant = _nextVariantFunction.bind(pTarget, ko, pTarget, _getVariants(def));
   }
@@ -256,7 +256,7 @@ var _makeComputedFunction = function(def, defs, thms, ko, contentModel, isConten
   return t;
 };
 
-var _augmentBlocksObservable = function(blocksObs, instrument) {
+var _augmentBlocksObservable = function (blocksObs, instrument) {
   blocksObs._instrumentBlock = instrument;
   if (typeof blocksObs.origPush == 'undefined') {
     blocksObs.origPush = blocksObs.push;
@@ -266,7 +266,7 @@ var _augmentBlocksObservable = function(blocksObs, instrument) {
   }
 };
 
-var _makeBlocksWrap = function(instrument, inputModel) {
+var _makeBlocksWrap = function (instrument, inputModel) {
   var model = ko.toJS(inputModel);
   var input = model.blocks;
   model.blocks = [];
@@ -281,14 +281,14 @@ var _makeBlocksWrap = function(instrument, inputModel) {
   this(res);
 };
 
-var _makePush = function() {
-  if (arguments.length > 1) throw "Array push with multiple arguments not implemented";
+var _makePush = function () {
+  if (arguments.length > 1) throw 'Array push with multiple arguments not implemented';
   // unwrap observable blocks, otherwise visibility (dependency) handling breaks
   if (arguments.length > 0 && ko.isObservable(arguments[0])) {
     if (typeof arguments[0]._unwrap == 'function') {
       arguments[0] = arguments[0]._unwrap();
     } else {
-      console.log("WARN: pushing observable with no _unwrap function (TODO remove me, expected condition)");
+      console.log('WARN: pushing observable with no _unwrap function (TODO remove me, expected condition)');
     }
   }
   if (!ko.isObservable(arguments[0])) {
@@ -299,13 +299,13 @@ var _makePush = function() {
   }
 };
 
-var _makeSplice = function() {
-  if (arguments.length > 3) throw "Array splice with multiple objects not implemented";
+var _makeSplice = function () {
+  if (arguments.length > 3) throw 'Array splice with multiple objects not implemented';
   if (arguments.length > 2 && ko.isObservable(arguments[2])) {
     if (typeof arguments[2]._unwrap == 'function') {
       arguments[2] = arguments[2]._unwrap();
     } else {
-      console.log("WARN: splicing observable with no _unwrap function (TODO remove me, expected condition)");
+      console.log('WARN: splicing observable with no _unwrap function (TODO remove me, expected condition)');
     }
   }
   if (arguments.length > 2 && !ko.isObservable(arguments[2])) {
@@ -317,7 +317,7 @@ var _makeSplice = function() {
 };
 
 // def, defs and themes are bound in "_modelInstrument" while the next parameters are exposed by this module
-var _blockInstrumentFunction = function(def, defs, themes, knockout, self, modelContent, isContent, self2) {
+var _blockInstrumentFunction = function (def, defs, themes, knockout, self, modelContent, isContent, self2) {
   // ugly: sometimes we have to bind content but not self, so we repeat self at the end as "self2"
   if (typeof self == 'undefined') self = self2;
 
@@ -329,16 +329,16 @@ var _blockInstrumentFunction = function(def, defs, themes, knockout, self, model
   return res;
 };
 
-var _wrap = function(instrument, unwrapped) {
+var _wrap = function (instrument, unwrapped) {
   var newContent = ko.utils.unwrapObservable(instrument(ko, unwrapped, undefined, true));
   this(newContent);
 };
 
-var _unwrap = function() {
+var _unwrap = function () {
   return ko.toJS(this);
 };
 
-var _modelInstrument = function(model, modelDef, defs) {
+var _modelInstrument = function (model, modelDef, defs) {
   var _instrument = _blockInstrumentFunction.bind(undefined, modelDef, defs, defs['themes']);
   var res = _instrument(ko, model, undefined, true);
   // res._instrument = _instrument;

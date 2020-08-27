@@ -1,19 +1,23 @@
-"use strict";
+'use strict';
 
-var ko = require("knockout");
+var ko = require('knockout');
 var undoManager = require('./undomanager.js');
-var undoserializer = require("./undoserializer.js");
+var undoserializer = require('./undoserializer.js');
 
-var addUndoStackExtensionMaker = function(performanceAwareCaller) {
-  return function(viewModel) {
+var addUndoStackExtensionMaker = function (performanceAwareCaller) {
+  return function (viewModel) {
 
     viewModel.contentListeners(viewModel.contentListeners() + 2);
 
     // TODO the labels should be computed observables (needs changes in undomanager projects)
     var undoRedoStack = undoManager(viewModel.content, {
       levels: 100,
-      undoLabel: ko.computed(function() { return viewModel.t("Undo (#COUNT#)"); }),
-      redoLabel: ko.computed(function() { return viewModel.t("Redo"); })
+      undoLabel: ko.computed(function () {
+        return viewModel.t('Undo (#COUNT#)');
+      }),
+      redoLabel: ko.computed(function () {
+        return viewModel.t('Redo');
+      }),
     });
     viewModel.undo = undoRedoStack.undoCommand;
     viewModel.undo.execute = performanceAwareCaller.bind(viewModel, 'undo', viewModel.undo.execute);
@@ -27,20 +31,20 @@ var addUndoStackExtensionMaker = function(performanceAwareCaller) {
     undoserializer.watchEnabled(true);
 
     return {
-      pause: function() {
+      pause: function () {
         undoRedoStack.setModeIgnore();
       },
-      run: function() {
+      run: function () {
         undoRedoStack.setModeOnce();
       },
-      init: function() {
+      init: function () {
         undoRedoStack.setModeOnce();
       },
-      dispose: function() {
+      dispose: function () {
         viewModel.contentListeners(viewModel.contentListeners() - 2);
         undoserializer.watchEnabled(false);
         undoRedoStack.dispose();
-      }
+      },
     };
 
   };

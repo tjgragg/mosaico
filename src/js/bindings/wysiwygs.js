@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 /* global global: false, Image: false */
 
-var tinymce = require("tinymce");
-var $ = require("jquery");
-var ko = require("knockout");
-var console = require("console");
-require("./eventable.js");
+var tinymce = require('tinymce');
+var $ = require('jquery');
+var ko = require('knockout');
+var console = require('console');
+require('./eventable.js');
 
 ko.bindingHandlers.wysiwygOrHtml = {
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
 
     if (isNotWysiwygMode)
@@ -16,18 +16,18 @@ ko.bindingHandlers.wysiwygOrHtml = {
     else
       return ko.bindingHandlers.wysiwyg.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
   },
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
     if (isNotWysiwygMode)
       return ko.bindingHandlers['virtualHtml'].update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
     //else 
     //  return ko.bindingHandlers.wysiwyg.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-  }
+  },
 };
 ko.virtualElements.allowedBindings['wysiwygOrHtml'] = true;
 
 ko.bindingHandlers.wysiwygHref = {
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     if (element.nodeType !== 8) {
       var v = valueAccessor();
 
@@ -52,7 +52,7 @@ ko.bindingHandlers.wysiwygHref = {
       }
     }
   },
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     if (element.nodeType !== 8) {
       var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
       // NOTE this unwrap is needed also in "wysiwyg" mode, otherwise dependency tracking dies.
@@ -64,7 +64,7 @@ ko.bindingHandlers.wysiwygHref = {
           element.setAttribute('href', attrValue.toString());
       }
     }
-  }
+  },
 };
 ko.virtualElements.allowedBindings['wysiwygHref'] = true;
 
@@ -74,44 +74,44 @@ ko.bindingHandlers.wysiwygSrc = {
   // Version with "width x height" text
   // svg: '<svg xmlns="http://www.w3.org/2000/svg" width="__WIDTH__" height="__HEIGHT__"><defs><pattern id="pinstripe" patternUnits="userSpaceOnUse" width="56.568" height="56.568" patternTransform="rotate(135)"><line x1="28.284" y="0" x2="28.284" y2="56.568" stroke="#808080" stroke-width="28.284" /></pattern></defs><rect width="100%" height="100%" fill="#707070"/><rect width="100%" height="100%" fill="url(#pinstripe)" /><text x="50%" y="50%" font-size="20" text-anchor="middle" alignment-baseline="middle" font-family="monospace, sans-serif" fill="#B0B0B0">__TEXT__</text></svg>',
   // Stripes only
-  svg: '<svg xmlns="http://www.w3.org/2000/svg" width="__WIDTH__" height="__HEIGHT__"><defs><pattern id="pinstripe" patternUnits="userSpaceOnUse" width="56.568" height="56.568" patternTransform="rotate(135)">'+
+  svg: '<svg xmlns="http://www.w3.org/2000/svg" width="__WIDTH__" height="__HEIGHT__"><defs><pattern id="pinstripe" patternUnits="userSpaceOnUse" width="56.568" height="56.568" patternTransform="rotate(135)">' +
     '<line x1="14.142" y1="0" x2="14.142" y2="56.568" stroke="#808080" stroke-width="28.284" /></pattern></defs><rect width="100%" height="100%" fill="#707070"/><rect width="100%" height="100%" fill="url(#pinstripe)" /></svg>',
-  convertedUrl: function(src, method, width, height) {
+  convertedUrl: function (src, method, width, height) {
     var queryParamSeparator = src.indexOf('?') == -1 ? '?' : '&';
-    var res = src + queryParamSeparator + "method=" + method + "&width=" + width + (height !== null ? "&height=" + height : '');
+    var res = src + queryParamSeparator + 'method=' + method + '&width=' + width + (height !== null ? '&height=' + height : '');
     return res;
   },
-  placeholderUrl: function(plwidth, plheight, pltext) {
-    var placeholdersrc = "'http://lorempixel.com/g/'+" + plwidth + "+'/'+" + plheight + "+'/abstract/'+encodeURIComponent(" + pltext + ")";
+  placeholderUrl: function (plwidth, plheight, pltext) {
+    var placeholdersrc = '\'http://lorempixel.com/g/\'+' + plwidth + '+\'/\'+' + plheight + '+\'/abstract/\'+encodeURIComponent(' + pltext + ')';
     // http://placehold.it/200x150.png/cccccc/333333&text=placehold.it#sthash.nA3r26vR.dpuf
     // placeholdersrc = "'http://placehold.it/'+"+width+"+'x'+"+height+"+'.png/cccccc/333333&text='+"+size;
     // placeholdersrc = "'"+converterUtils.addSlashes(defaultValue)+"'";
   },
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     if (ko.bindingHandlers['wysiwygSrc'].preload) $(element).data('preloadimg', new Image());
   },
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isWysiwygMode = (typeof bindingContext.templateMode != 'undefined' && bindingContext.templateMode == 'wysiwyg');
 
     var valueAcc = valueAccessor();
 
-    var srcSetter = function(src, w, h, text, isPlaceholder) {
-      if (src == undefined || src == null || src == "") {
+    var srcSetter = function (src, w, h, text, isPlaceholder) {
+      if (src == undefined || src == null || src == '') {
         element.removeAttribute('src');
       } else if (element.getAttribute('src') !== src) {
         if (ko.bindingHandlers['wysiwygSrc'].preload && isWysiwygMode) {
           // if we are waiting for a remote placeholder, let's generate an SVG placeholder on the clientsize!
           if (typeof ko.bindingHandlers.wysiwygSrc.svg == 'string' && isPlaceholder) {
             var svgcode = ko.bindingHandlers.wysiwygSrc.svg.replace('__WIDTH__', w).replace('__HEIGHT__', h).replace('__TEXT__', text);
-            element.setAttribute('src', 'data:image/svg+xml;base64,'+global.btoa(svgcode));
+            element.setAttribute('src', 'data:image/svg+xml;base64,' + global.btoa(svgcode));
           }
           if (ko.bindingHandlers['wysiwygSrc'].preloadingClass) element.classList.add(ko.bindingHandlers['wysiwygSrc'].preloadingClass);
           var img = $(element).data('preloadimg');
-          img.onload = function() {
+          img.onload = function () {
             element.setAttribute('src', src);
             if (ko.bindingHandlers['wysiwygSrc'].preloadingClass) element.classList.remove(ko.bindingHandlers['wysiwygSrc'].preloadingClass);
           };
-          img.onerror = function(e) {
+          img.onerror = function (e) {
             console.warn('Unable to preload image', src, e);
             element.setAttribute('src', src);
             if (ko.bindingHandlers['wysiwygSrc'].preloadingClass) element.classList.remove(ko.bindingHandlers['wysiwygSrc'].preloadingClass);
@@ -132,7 +132,7 @@ ko.bindingHandlers.wysiwygSrc = {
     var src = null;
     var w = ko.utils.unwrapObservable(placeholderValue.width);
     var h = ko.utils.unwrapObservable(placeholderValue.height);
-    var text = w && h ? w+'x'+h : w ? 'w'+w : 'h'+h;
+    var text = w && h ? w + 'x' + h : w ? 'w' + w : 'h' + h;
     var isPlaceholder = false;
     if ((srcValue === false) || (srcValue === null) || (srcValue === undefined) || (srcValue === '')) {
       if (typeof placeholderValue == 'object' && placeholderValue !== null) src = ko.bindingHandlers.wysiwygSrc.placeholderUrl(w, h, text);
@@ -144,50 +144,50 @@ ko.bindingHandlers.wysiwygSrc = {
     }
     srcSetter(src, w, h, text, isPlaceholder);
 
-    if (typeof width !== 'undefined' && width !== null) element.setAttribute("width", width);
-    else element.removeAttribute("width");
-    if (typeof height !== 'undefined' && height !== null) element.setAttribute("height", height);
-    else element.removeAttribute("height");
-  }
+    if (typeof width !== 'undefined' && width !== null) element.setAttribute('width', width);
+    else element.removeAttribute('width');
+    if (typeof height !== 'undefined' && height !== null) element.setAttribute('height', height);
+    else element.removeAttribute('height');
+  },
 };
 
 ko.bindingHandlers.wysiwygId = {
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
     if (!isNotWysiwygMode)
       element.setAttribute('id', ko.utils.unwrapObservable(valueAccessor()));
   },
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
     if (!isNotWysiwygMode)
       element.setAttribute('id', ko.utils.unwrapObservable(valueAccessor()));
-  }
+  },
 };
 ko.virtualElements.allowedBindings['wysiwygId'] = true;
 
 // used on editable "item" so to bind clicks only in wysiwyg mode.
 ko.bindingHandlers.wysiwygClick = {
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
     if (!isNotWysiwygMode)
       ko.bindingHandlers.click.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-  }
+  },
 };
 ko.virtualElements.allowedBindings['wysiwygClick'] = true;
 
 // used on editable "item" so to bind css only in wysiwyg mode.
 ko.bindingHandlers.wysiwygCss = {
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var isNotWysiwygMode = (typeof bindingContext.templateMode == 'undefined' || bindingContext.templateMode != 'wysiwyg');
     if (!isNotWysiwygMode)
       ko.bindingHandlers.css.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-  }
+  },
 };
 ko.virtualElements.allowedBindings['wysiwygCss'] = true;
 
 ko.bindingHandlers.wysiwygImg = {
-  makeTemplateValueAccessor: function(valueAccessor, bindingContext) {
-    return function() {
+  makeTemplateValueAccessor: function (valueAccessor, bindingContext) {
+    return function () {
       var isWysiwygMode = (typeof bindingContext.templateMode != 'undefined' && bindingContext.templateMode == 'wysiwyg');
 
       var modelValue = valueAccessor(),
@@ -198,29 +198,28 @@ ko.bindingHandlers.wysiwygImg = {
 
       return {
         'name': isWysiwygMode ? unwrappedValue['_editTemplate'] : unwrappedValue['_template'],
-        'templateEngine': ko.nativeTemplateEngine.instance
+        'templateEngine': ko.nativeTemplateEngine.instance,
       };
     };
   },
-  'init': function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+  'init': function (element, valueAccessor, allBindings, viewModel, bindingContext) {
     return ko.bindingHandlers['template']['init'](element, ko.bindingHandlers['wysiwygImg'].makeTemplateValueAccessor(valueAccessor, bindingContext));
   },
-  'update': function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+  'update': function (element, valueAccessor, allBindings, viewModel, bindingContext) {
     bindingContext = bindingContext['extend'](valueAccessor());
     return ko.bindingHandlers['template']['update'](element, ko.bindingHandlers['wysiwygImg'].makeTemplateValueAccessor(valueAccessor, bindingContext), allBindings, viewModel, bindingContext);
-  }
+  },
 };
 ko.virtualElements.allowedBindings['wysiwygImg'] = true;
 
 // A replacement for tinymce fire method, so to catch annoying exceptions, @see wysiwyg binding code in editor setup-
-var _catchingFire = function(event, args) {
+var _catchingFire = function (event, args) {
   try {
     return this.originalFire.apply(this, arguments);
   } catch (e) {
-    console.warn("Cought tinymce exception while firing editor event", event, e);
+    console.warn('Cought tinymce exception while firing editor event', event, e);
   }
 };
-
 
 // NOTE: there are issues with the "raw" format and trash left around by tinymce workarounds for contenteditable issues.
 // setting "forced_root_block: false" disable the default behaviour of adding a wrapper <p> when needed and this seems to fix many issues in IE.
@@ -229,7 +228,7 @@ ko.bindingHandlers.wysiwyg = {
   debug: false,
   // please note that setting getContentOptions to "{}" improves (clean ups) the html output generated by tinymce, but also introduces a bug in Firefox: https://github.com/voidlabs/mosaico/issues/446
   // by keeping raw the output is still broken in Firefox but empty <p> tags are rendered 0px height.
-  getContentOptions: { format: 'raw' },
+  getContentOptions: {format: 'raw'},
   useTarget: false,
   currentIndex: 0,
   standardOptions: {},
@@ -243,14 +242,14 @@ ko.bindingHandlers.wysiwyg = {
     toolbar1: 'bold italic forecolor backcolor hr styleselect removeformat | link unlink | pastetext code',
     //toolbar1: "bold italic | forecolor backcolor | link unlink | hr | pastetext code", // | newsletter_profile newsletter_optlink newsletter_unsubscribe newsletter_showlink";
     //toolbar2: "formatselect fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist",
-    plugins: ["link hr paste lists textcolor code"],
+    plugins: ['link hr paste lists textcolor code'],
     // valid_elements: 'strong/b,em/i,*[*]',
     // extended_valid_elements: 'strong/b,em/i,*[*]',
     // Removed: image fullscreen contextmenu 
     // download custom:
     // jquery version con legacyoutput, anchor, code, importcss, link, paste, textcolor, hr, lists
   },
-  init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     // TODO ugly, but works...
     ko.bindingHandlers.focusable.init(element);
 
@@ -272,16 +271,16 @@ ko.bindingHandlers.wysiwyg = {
       element.classList.add(ko.bindingHandlers.wysiwyg.initializingClass);
     }
 
-    ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
-      if (doDebug) console.debug("Editor for selector", selectorId, "is being removed...");
+    ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+      if (doDebug) console.debug('Editor for selector', selectorId, 'is being removed...');
       tinymce.remove('#' + element.getAttribute('id'));
-      if (doDebug) console.debug("Editor for selector", selectorId, "has been removed.");
+      if (doDebug) console.debug('Editor for selector', selectorId, 'has been removed.');
     });
 
     var value = valueAccessor();
 
-    if (!ko.isObservable(value)) throw "Wysiwyg binding called with non observable";
-    if (element.nodeType === 8) throw "Wysiwyg binding called on virtual node, ignoring...." + element.innerHTML;
+    if (!ko.isObservable(value)) throw 'Wysiwyg binding called with non observable';
+    if (element.nodeType === 8) throw 'Wysiwyg binding called on virtual node, ignoring....' + element.innerHTML;
 
     var fullEditor = element.tagName == 'DIV' || element.tagName == 'TD';
     var isSubscriberChange = false;
@@ -292,14 +291,14 @@ ko.bindingHandlers.wysiwyg = {
       inline: true,
       // maybe not needed, but won't hurt.
       hidden_input: false,
-      plugins: ["paste"],
-      toolbar1: "bold italic",
-      toolbar2: "",
+      plugins: ['paste'],
+      toolbar1: 'bold italic',
+      toolbar2: '',
       // we have to disable preview_styles otherwise tinymce push inline every style he things will be applied and this makes the style menu to inherit color/font-family and more.
       preview_styles: false,
       paste_as_text: true,
       language: 'en',
-      schema: "html5",
+      schema: 'html5',
       extended_valid_elements: 'strong/b,em/i,*[*]',
       menubar: false,
       skin: 'gray-flat',
@@ -307,8 +306,8 @@ ko.bindingHandlers.wysiwyg = {
       // force_br_newlines: !fullEditor, // we force BR as newline when NOT in full editor
       // force_p_newlines: fullEditor,
       forced_root_block: fullEditor ? 'p' : '',
-      init_instance_callback : function(editor) {
-        if (doDebug) console.debug("Editor for selector", selectorId, "is now initialized.");
+      init_instance_callback: function (editor) {
+        if (doDebug) console.debug('Editor for selector', selectorId, 'is now initialized.');
         if (ko.bindingHandlers.wysiwyg.initializingClass) {
           element.classList.remove(ko.bindingHandlers.wysiwyg.initializingClass);
         }
@@ -319,16 +318,16 @@ ko.bindingHandlers.wysiwyg = {
         if (typeof console.debug == 'function') {
           var elementStyle = element.currentStyle ? element.currentStyle.display : global.getComputedStyle(element, null).display;
           if (elementStyle == 'inline') {
-            console.debug("Initializing an editor on an inline element: please note that while it may work, this is unsupported because of a multitude of browser issues", element.tagName, elementStyle, selectorId);
+            console.debug('Initializing an editor on an inline element: please note that while it may work, this is unsupported because of a multitude of browser issues', element.tagName, elementStyle, selectorId);
           }
         }
 
       },
-      setup: function(editor) {
-        if (doDebug) console.debug("Editor for selector", selectorId, "is now in the setup phase.");
+      setup: function (editor) {
+        if (doDebug) console.debug('Editor for selector', selectorId, 'is now in the setup phase.');
 
-        var emptyClassHandler = function() {
-          var textContent = (element.textContent || element.innerText || "").trim();
+        var emptyClassHandler = function () {
+          var textContent = (element.textContent || element.innerText || '').trim();
           if (textContent.length == 0) {
             element.classList.add(ko.bindingHandlers.wysiwyg.emptyClass);
           } else {
@@ -338,7 +337,7 @@ ko.bindingHandlers.wysiwyg = {
 
         // TODO change sometimes doesn't trigger (we have to document when)
         // listening on keyup would increase correctness but we would need a rateLimit to avoid flooding.
-        editor.on('change redo undo', function() {
+        editor.on('change redo undo', function () {
           if (!isSubscriberChange) {
             try {
               isEditorChange = true;
@@ -352,7 +351,7 @@ ko.bindingHandlers.wysiwyg = {
               // in order to keep backward compatibility.
               value(editor.getContent(ko.bindingHandlers.wysiwyg.getContentOptions));
             } catch (e) {
-              console.warn("Unexpected error setting content value for", selectorId, e);
+              console.warn('Unexpected error setting content value for', selectorId, e);
             } finally {
               isEditorChange = false;
             }
@@ -361,14 +360,14 @@ ko.bindingHandlers.wysiwyg = {
         });
 
         if (ko.bindingHandlers.wysiwyg.emptyClass) {
-          editor.on('keyup', function() {
+          editor.on('keyup', function () {
             emptyClassHandler();
           });
         }
 
         // Clicking on the element on focus change allow the "clic" code to be triggered and propagate the selection.
         // Not elegant, maybe we have better options.
-        editor.on('focus', function() {
+        editor.on('focus', function () {
           // Used by scrollfix.js (maybe this is not needed by new scrollfix.js)
           editor.nodeChanged();
           editor.getElement().click();
@@ -377,13 +376,13 @@ ko.bindingHandlers.wysiwyg = {
         // Make this an option, default to true, but we let users revert the behaviour to pre 0.17.2 release by
         // setting ko.bindingHandlers.wysiwyg.removeSelectionOnBlur to false
         if (ko.bindingHandlers.wysiwyg.removeSelectionOnBlur) {
-          editor.on('blur', function(event) {
+          editor.on('blur', function (event) {
             global.getSelection().removeAllRanges();
           });
         }
 
         // NOTE: this fixes issue with "leading spaces" in default content that were lost during initialization.
-        editor.on('BeforeSetContent', function(args) {
+        editor.on('BeforeSetContent', function (args) {
           if (args.initial) args.format = 'raw';
         });
 
@@ -406,7 +405,7 @@ ko.bindingHandlers.wysiwyg = {
 
         thisEditor = editor;
 
-      }
+      },
     };
 
     // we used to use selector but now we also support target (so to not require an ID) as init method.
@@ -422,18 +421,18 @@ ko.bindingHandlers.wysiwyg = {
     // we have to put initialization in a settimeout, otherwise switching from "1" to "2" columns blocks
     // will start the new editors before disposing the old ones and IDs get temporarily duplicated.
     // using setTimeout the dispose/create order is correct on every browser tested.
-    global.setTimeout(function() {
-      if (doDebug) console.debug("Editor for selector", selectorId, "is being inizialized ...");
+    global.setTimeout(function () {
+      if (doDebug) console.debug('Editor for selector', selectorId, 'is being inizialized ...');
       var res = tinymce.init(options);
-      if (doDebug) console.debug("Editor for selector", selectorId, "init has just been called returning", res);
-      res.then(function() {
-        if (doDebug) console.debug("Editor for selector", selectorId, "init promise has resolved.");
-      }, function(failure) {
-        console.log("Editor for selector", selectorId, "init promise has failed.", failure);
+      if (doDebug) console.debug('Editor for selector', selectorId, 'init has just been called returning', res);
+      res.then(function () {
+        if (doDebug) console.debug('Editor for selector', selectorId, 'init promise has resolved.');
+      }, function (failure) {
+        console.log('Editor for selector', selectorId, 'init promise has failed.', failure);
       });
     });
 
-    ko.computed(function() {
+    ko.computed(function () {
       var content = ko.utils.unwrapObservable(valueAccessor());
       if (!isEditorChange) {
         try {
@@ -441,23 +440,23 @@ ko.bindingHandlers.wysiwyg = {
           // we failed setting contents in other ways...
           // $(element).html(content);
           if (typeof thisEditor !== 'undefined') {
-            thisEditor.setContent(content, { format: 'raw' });
+            thisEditor.setContent(content, {format: 'raw'});
           } else {
             ko.utils.setHtml(element, content);
           }
         } catch (e) {
-          console.warn("Exception setting content to editable element", typeof thisEditor, e);
+          console.warn('Exception setting content to editable element', typeof thisEditor, e);
         }
         isSubscriberChange = false;
       }
     }, null, {
-      disposeWhenNodeIsRemoved: element
+      disposeWhenNodeIsRemoved: element,
     });
 
     // do not parse html content for KO bindings!!
     return {
-      controlsDescendantBindings: true
+      controlsDescendantBindings: true,
     };
 
-  }
+  },
 };

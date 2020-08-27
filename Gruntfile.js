@@ -1,23 +1,23 @@
-"use strict";
+'use strict';
 var path = require('path');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   grunt.loadTasks('tasks');
 
-  var pkg = grunt.file.readJSON("package.json");
+  var pkg = grunt.file.readJSON('package.json');
 
   grunt.initConfig({
 
     pkg: pkg,
 
-    pkgVersion: "<%= pkg.version %>",
+    pkgVersion: '<%= pkg.version %>',
 
     combineKOTemplates: {
       main: {
-        src: "src/tmpl/*.tmpl.html",
-        dest: "build/templates.js"
-      }
+        src: 'src/tmpl/*.tmpl.html',
+        dest: 'build/templates.js',
+      },
     },
 
     jshint: {
@@ -29,9 +29,9 @@ module.exports = function(grunt) {
         reporter: require('jshint-stylish'),
         sub: true,
         jshintrc: true,
-        browserify: true
+        browserify: true,
 
-      }
+      },
     },
 
     less: {
@@ -39,35 +39,35 @@ module.exports = function(grunt) {
         sourceMap: true,
         sourceMapRootpath: '../',
         /* sourceMapFilename: 'build/mosaico.css.map' */
-        sourceMapFileInline: true
+        sourceMapFileInline: true,
       },
       css: {
         files: {
-          "build/mosaico.css": "src/css/app_standalone.less",
-          "build/mosaico-material.css": "src/css/app_standalone_material.less"
-        }
-      }
+          'build/mosaico.css': 'src/css/app_standalone.less',
+          'build/mosaico-material.css': 'src/css/app_standalone_material.less',
+        },
+      },
     },
 
     postcss: {
       options: {
         map: {
-          inline: false /* , prev: 'build/app.css.map' */
+          inline: false, /* , prev: 'build/app.css.map' */
         },
         diff: false,
         processors: [
           require('autoprefixer')(),
-          require('csswring')()
-        ]
+          require('csswring')(),
+        ],
       },
       dist: {
         src: 'build/mosaico.css',
-        dest: 'dist/rs/mosaico.min.css'
+        dest: 'dist/rs/mosaico.min.css',
       },
       material: {
         src: 'build/mosaico-material.css',
-        dest: 'dist/rs/mosaico-material.min.css'
-      }
+        dest: 'dist/rs/mosaico-material.min.css',
+      },
     },
 
     browserify: {
@@ -76,61 +76,61 @@ module.exports = function(grunt) {
           browserifyOptions: {
             debug: true,
             fullPaths: false,
-            standalone: 'Mosaico'
+            standalone: 'Mosaico',
           },
           // transforms are declared in the package.json ("aliasify", "browserify-versionify" are executed because declared there).
           // We only redeclare browserify-shim so to be able to pass the global argument to strip down depedencies.
           // We used to do run uglifyify transform as part of browserify but this now breaks sourcemapping
           // transform: [['browserify-shim', {global: true}], ['uglifyify', {global: true}]],
-          transform: [ ['browserify-shim', {global: true}] ],
+          transform: [['browserify-shim', {global: true}]],
           cacheFile: 'build/main-incremental.bin',
-          banner: '/** \n'+
-                  ' * <%= pkg.description %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n'+
-                  ' * Licensed under the <%= pkg.license %> (<%= pkg.licenseurl %>)\n'+
-                  ' * \n'+
-                  ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %> \n'+
-                  ' */',
+          banner: '/** \n' +
+            ' * <%= pkg.description %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n' +
+            ' * Licensed under the <%= pkg.license %> (<%= pkg.licenseurl %>)\n' +
+            ' * \n' +
+            ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %> \n' +
+            ' */',
         },
         files: {
-          'build/mosaico.inlinesourcemap.js': ['./src/js/app.js', './build/templates.js']
-        }
-      }
+          'build/mosaico.inlinesourcemap.js': ['./src/js/app.js', './build/templates.js'],
+        },
+      },
     },
 
     // We use exorcise before uglify because uglify doesn't correctly handle inline sourcemaps.
     exorcise: {
       main: {
         options: {
-          bundleDest: 'build/mosaico.js'
+          bundleDest: 'build/mosaico.js',
         },
         files: {
           'build/mosaico.js.map': ['build/mosaico.inlinesourcemap.js'],
-        }
-      }
+        },
+      },
     },
 
     watch: {
       // for each set of files we have to define the whole execution steps (recursion not supported)
       css: {
         files: ['src/css/*.less', 'src/**/*.css'],
-        tasks: ['less', 'postcss']
+        tasks: ['less', 'postcss'],
       },
       tmpl: {
         files: ['src/tmpl/*.tmpl.html'],
-        tasks: ['combineKOTemplates', 'browserify', 'exorcise', 'uglify:min']
+        tasks: ['combineKOTemplates', 'browserify', 'exorcise', 'uglify:min'],
       },
       browserify: {
         files: ['src/js/**/*.js', 'build/templates.js'],
-        tasks: ['newer:jshint', 'browserify', 'exorcise', 'uglify:min']
+        tasks: ['newer:jshint', 'browserify', 'exorcise', 'uglify:min'],
       },
       htmls: {
         files: ['src/html/*.html'],
-        tasks: ['copy:htmls']
+        tasks: ['copy:htmls'],
       },
 
       web: {
         options: {
-          livereload: true
+          livereload: true,
         },
         files: ['dist/*.html', 'dist/**/*.js', 'dist/**/*.css'],
       },
@@ -142,8 +142,8 @@ module.exports = function(grunt) {
           script: 'backend/main.js',
           background: true,
           port: 9006,
-        }
-      }
+        },
+      },
     },
 
     googlefonts: {
@@ -152,16 +152,16 @@ module.exports = function(grunt) {
           fontPath: './dist/rs/notoregular/',
           httpPath: './notoregular/',
           cssFile: './build/notoregular.css',
-          formats: { eot: true, woff: true, svg: false, ttf: true, woff2: false },
+          formats: {eot: true, woff: true, svg: false, ttf: true, woff2: false},
           fonts: [
             {
               family: 'Noto Sans',
-              styles: [ 400 ],
-              subsets: [ 'latin' ]
-            }
-          ]
-        }
-      }
+              styles: [400],
+              subsets: ['latin'],
+            },
+          ],
+        },
+      },
     },
 
     copy: {
@@ -169,12 +169,12 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'res',
         src: '**',
-        dest: 'dist/rs/'
+        dest: 'dist/rs/',
       },
 
       root: {
         src: 'favicon.ico',
-        dest: 'dist/'
+        dest: 'dist/',
       },
 
       htmls: {
@@ -193,7 +193,7 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'node_modules/font-awesome/fonts',
         src: 'fontawesome-webfont.*',
-        dest: 'dist/rs/fontawesome/'
+        dest: 'dist/rs/fontawesome/',
       },
 
     },
@@ -208,40 +208,40 @@ module.exports = function(grunt) {
             'res/vendor/skins/gray-flat/skin.min.css',
             'res/vendor/skins/gray-flat/content.inline.min.css'
             */
-          ]
-        }
-      }
+          ],
+        },
+      },
     },
 
     uglify: {
       min: {
         options: {
           sourceMap: {
-            includeSources: true
+            includeSources: true,
           },
           sourceMapIn: 'build/mosaico.js.map',
         },
         files: {
-          'dist/rs/mosaico.min.js': [ 'build/mosaico.js' ]
-        }
+          'dist/rs/mosaico.min.js': ['build/mosaico.js'],
+        },
       },
       deps: {
         options: {
           comments: 'some',
           sourceMap: {
-            includeSources: true
+            includeSources: true,
           },
-          banner: '/*! \n'+
-                  ' * Bundle package for the following libraries:\n'+
-                  ' * jQuery | (c) JS Foundation and other contributors | jquery.org/license\n'+
-                  ' * jQuery Migrate v3.0.1 | (c) jQuery Foundation and other contributors | jquery.org/license\n'+
-                  ' * Knockout | (c) The Knockout.js team | License: MIT (http://www.opensource.org/licenses/mit-license.php)\n'+
-                  ' * jQuery UI | Copyright 2015 jQuery Foundation and other contributors; Licensed MIT\n'+
-                  ' * jQuery UI Touch Punch | Copyright 2011-2014, Dave Furfero | Dual licensed under the MIT or GPL Version 2 licenses.\n'+
-                  ' * jQuery File Upload Plugin + dependencies | Copyright 2010, Sebastian Tschan | Licensed under the MIT license: https://opensource.org/licenses/MIT\n'+
-                  ' * knockout-jqueryui | Copyright (c) 2016 Vas Gabor <gvas.munka@gmail.com> Licensed MIT\n'+
-                  ' * TinyMCE + Plugins | Copyright (c) 1999-2017 Ephox Corp. | Released under LGPL License. http://www.tinymce.com/license\n'+
-                  ' */'
+          banner: '/*! \n' +
+            ' * Bundle package for the following libraries:\n' +
+            ' * jQuery | (c) JS Foundation and other contributors | jquery.org/license\n' +
+            ' * jQuery Migrate v3.0.1 | (c) jQuery Foundation and other contributors | jquery.org/license\n' +
+            ' * Knockout | (c) The Knockout.js team | License: MIT (http://www.opensource.org/licenses/mit-license.php)\n' +
+            ' * jQuery UI | Copyright 2015 jQuery Foundation and other contributors; Licensed MIT\n' +
+            ' * jQuery UI Touch Punch | Copyright 2011-2014, Dave Furfero | Dual licensed under the MIT or GPL Version 2 licenses.\n' +
+            ' * jQuery File Upload Plugin + dependencies | Copyright 2010, Sebastian Tschan | Licensed under the MIT license: https://opensource.org/licenses/MIT\n' +
+            ' * knockout-jqueryui | Copyright (c) 2016 Vas Gabor <gvas.munka@gmail.com> Licensed MIT\n' +
+            ' * TinyMCE + Plugins | Copyright (c) 1999-2017 Ephox Corp. | Released under LGPL License. http://www.tinymce.com/license\n' +
+            ' */',
         },
         /* This is named "*and-tinymce.min.js" by purpose otherwise Tinymce on IE11 is unable to find its own skin */
         files: {
@@ -274,8 +274,8 @@ module.exports = function(grunt) {
             'node_modules/tinymce/plugins/textcolor/plugin.js',
             'node_modules/tinymce/plugins/code/plugin.js',
           ],
-        }
-      }
+        },
+      },
     },
 
     jasmine_node: {
@@ -293,18 +293,18 @@ module.exports = function(grunt) {
                 report: false,
                 savePath: './build/jasmine/',
                 useDotNotation: true,
-                consolidate: true
-              }
-            }
-          }
+                consolidate: true,
+              },
+            },
+          },
         },
-        src: ['src/**/*.js']
-      }
+        src: ['src/**/*.js'],
+      },
     },
 
     clean: {
       build: ['build/'],
-      dist: ['dist/']
+      dist: ['dist/'],
     },
 
     check_licenses: {
@@ -328,20 +328,20 @@ module.exports = function(grunt) {
           'spdx-exceptions': 'CC-BY-3.0', // Not bundled, used at build time
           'spdx-ranges': 'CC-BY-3.0', // Not bundled, used at build time
           'node-releases': 'CC-BY-4.0', // Not bundled, used at build time
-        }
-      }
+        },
+      },
     },
 
     compress: {
       dist: {
         options: {
-          archive: 'release/<%= pkg.name %>-<%= pkg.version %>-dist.zip'
+          archive: 'release/<%= pkg.name %>-<%= pkg.version %>-dist.zip',
         },
         files: [
-          { expand: true, cwd: 'dist', src: ['**'], dest: '/' },
-          { src: ['templates/versafix-1/**', 'README.md', 'NOTICE.txt', 'LICENSE'], dest: '/' }
-        ]
-      }
+          {expand: true, cwd: 'dist', src: ['**'], dest: '/'},
+          {src: ['templates/versafix-1/**', 'README.md', 'NOTICE.txt', 'LICENSE'], dest: '/'},
+        ],
+      },
     },
 
     release: {
@@ -355,7 +355,7 @@ module.exports = function(grunt) {
         github: {
           repo: 'voidlabs/mosaico',
           accessTokenVar: 'GITHUB_ACCESS_TOKEN',
-        }
+        },
       },
     },
 

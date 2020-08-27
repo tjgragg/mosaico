@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
-var ko = require("knockout");
-var reactor = require("knockoutjs-reactor");
-var console = require("console");
+var ko = require('knockout');
+var reactor = require('knockoutjs-reactor');
+var console = require('console');
 
 /// <summary>
 ///     Track last "levels" changes within the chained observable down to any given level and
@@ -30,10 +30,10 @@ var undoManager = function (model, options) {
 
   var defaultOptions = {
     levels: 100,
-    undoLabel: "undo (#COUNT#)",
-    redoLabel: "redo (#COUNT#)"
+    undoLabel: 'undo (#COUNT#)',
+    redoLabel: 'redo (#COUNT#)',
   };
-  
+
   if (typeof options == 'object') {
     options = ko.utils.extend(defaultOptions, options);
   } else {
@@ -51,7 +51,7 @@ var undoManager = function (model, options) {
       redoStack.removeAll();
     }
   };
-  
+
   var _tryMerge = function (prev, newAction) {
     if (typeof prev.mergedAction !== 'undefined') {
       return prev.mergedAction(newAction);
@@ -74,16 +74,16 @@ var undoManager = function (model, options) {
     lastPushedStack = myStack;
     myStack.push(action);
   };
-  
-  var _xdoCommand = function(label, workState, stack) {
+
+  var _xdoCommand = function (label, workState, stack) {
     return {
-      name: ko.computed(function() {
+      name: ko.computed(function () {
         return ko.utils.unwrapObservable(label).replace(/#COUNT#/, stack().length);
       }),
-      enabled: ko.computed(function() {
+      enabled: ko.computed(function () {
         return stack().length !== 0;
       }),
-      execute: function() {
+      execute: function () {
         var action = stack.pop();
         if (action) {
           var prevState = state;
@@ -96,20 +96,20 @@ var undoManager = function (model, options) {
           state = prevState;
         }
         return true;
-      }
+      },
     };
   };
 
-  var _removeMergedAction = function(myStack) {
-    if (typeof myStack == 'undefined') throw "Unexpected operation: stack cleaner called with undefined stack";
-    
+  var _removeMergedAction = function (myStack) {
+    if (typeof myStack == 'undefined') throw 'Unexpected operation: stack cleaner called with undefined stack';
+
     if (myStack().length > 0 && typeof myStack()[myStack().length - 1].mergedAction !== 'undefined') {
       delete myStack()[myStack().length - 1].mergedAction;
     }
   };
 
-  var _combinedFunction = function(first, second) {
-    var res = (function(f1, f2) {
+  var _combinedFunction = function (first, second) {
+    var res = (function (f1, f2) {
       f1();
       f2();
     }).bind(undefined, first, second);
@@ -119,11 +119,11 @@ var undoManager = function (model, options) {
     return res;
   };
 
-  var executeUndoAction = function(child, value, item) {
+  var executeUndoAction = function (child, value, item) {
     if (typeof value !== 'undefined') {
       child(value);
     } else if (item) {
-      if (item.status !== 'added' && item.status !== 'deleted') throw "Unsupported item.status: "+item.status;
+      if (item.status !== 'added' && item.status !== 'deleted') throw 'Unsupported item.status: ' + item.status;
 
       // When the items are "moved" we do both delete and add on the "add" action and ignore the delete action
       if (typeof item.moved !== 'undefined') {
@@ -141,17 +141,17 @@ var undoManager = function (model, options) {
         }
       }
     } else {
-      throw "Unexpected condition: no item and no child.oldValues!";
+      throw 'Unexpected condition: no item and no child.oldValues!';
     }
   };
 
-  var makeUndoActionDefault = function(undoFunc, parents, child, oldVal, item) {
+  var makeUndoActionDefault = function (undoFunc, parents, child, oldVal, item) {
     return undoFunc.bind(undefined, child, oldVal, item);
   };
 
   var makeUndoAction = makeUndoActionDefault;
 
-  var changePusher = function(parents, child, item) {
+  var changePusher = function (parents, child, item) {
     var oldVal = typeof child.oldValues != 'undefined' ? child.oldValues[0] : undefined;
     var act = makeUndoAction(executeUndoAction, parents, child, oldVal, item);
 
@@ -159,7 +159,7 @@ var undoManager = function (model, options) {
 
     if (mode == MODE_MERGE) {
       if (typeof act !== 'undefined') {
-        act.mergedAction = function(newAction) {
+        act.mergedAction = function (newAction) {
           if (typeof newAction.mergeMe !== 'undefined' && newAction.mergeMe) {
             return _combinedFunction(newAction, this);
           } else return null;
@@ -169,12 +169,12 @@ var undoManager = function (model, options) {
     } else {
       if (typeof act !== 'undefined') {
         if (child.oldValues && mode == MODE_ONCE) {
-          act.mergedAction = function(oldChild, oldItem, newAction) {
+          act.mergedAction = function (oldChild, oldItem, newAction) {
             if (typeof newAction.mergeableAction == 'object' && oldChild == newAction.mergeableAction.child) {
               return this;
             } else return null;
           }.bind(act, child, item);
-          act.mergeableAction = { child: child, item: item };
+          act.mergeableAction = {child: child, item: item};
         }
 
         // "item" is valued when an item is added/removed/reteined in an array
@@ -185,7 +185,7 @@ var undoManager = function (model, options) {
         if (item && (item.status == 'deleted' || item.status == 'added')) {
           // TODO se sono in MODE = MERGE devo metteer una funzione di merge che accetta tutto.
           // altrimenti lascio questa.
-          act.mergedAction = function(oldChild, oldItem, newAction) {
+          act.mergedAction = function (oldChild, oldItem, newAction) {
             // a deleted action is able to merge with a added action if they apply to the same
             // object.
             if (typeof newAction.mergeableMove == 'object' && oldItem.value == newAction.mergeableMove.item.value) {
@@ -200,33 +200,58 @@ var undoManager = function (model, options) {
 
           // add a mergeableMove property that will be used by the next action "mergedAction" to see if this action
           // can be merged.
-          act.mergeableMove = { child: child, item: item };
+          act.mergeableMove = {child: child, item: item};
         } else if (item) {
-          console.warn("Unsupported item.status", item.status, typeof item, item);
+          console.warn('Unsupported item.status', item.status, typeof item, item);
         }
       }
     }
     if (typeof act !== 'undefined') _push(act);
   };
 
-  var reactorOptions = { depth: -1, oldValues: 1, mutable: true, /* tagParentsWithName: true */ tagFields: true, async: false /*, splitArrayChanges: false */ };
+  var reactorOptions = {
+    depth: -1,
+    oldValues: 1,
+    mutable: true, /* tagParentsWithName: true */
+    tagFields: true,
+    async: false, /*, splitArrayChanges: false */
+  };
 
   var context = {};
   var react = typeof reactor == 'function' ? reactor : ko.watch;
   var res = react(model, reactorOptions, changePusher, context);
 
   return {
-    push: _push, 
+    push: _push,
     undoCommand: _xdoCommand(options.undoLabel, STATE_UNDOING, undoStack),
     redoCommand: _xdoCommand(options.redoLabel, STATE_REDOING, redoStack),
-    reset: function() { undoStack.removeAll(); redoStack.removeAll(); },
+    reset: function () {
+      undoStack.removeAll();
+      redoStack.removeAll();
+    },
     // setMode: function(newMode) { mode = newMode; _removeMergedAction(undoStack); },
-    setModeOnce: function() { mode = MODE_ONCE; _removeMergedAction(undoStack); },
-    setModeMerge: function() { mode = MODE_MERGE; _removeMergedAction(undoStack); },
-    setModeNormal: function() { mode = MODE_NORMAL; _removeMergedAction(undoStack); },
-    setModeIgnore: function() { mode = MODE_IGNORE; _removeMergedAction(undoStack); },
-    setUndoActionMaker: function(maker) { makeUndoAction = maker; },
-    dispose: function() { /* ko.unwatch(model, reactorOptions, changePusher); */ res.dispose(); }
+    setModeOnce: function () {
+      mode = MODE_ONCE;
+      _removeMergedAction(undoStack);
+    },
+    setModeMerge: function () {
+      mode = MODE_MERGE;
+      _removeMergedAction(undoStack);
+    },
+    setModeNormal: function () {
+      mode = MODE_NORMAL;
+      _removeMergedAction(undoStack);
+    },
+    setModeIgnore: function () {
+      mode = MODE_IGNORE;
+      _removeMergedAction(undoStack);
+    },
+    setUndoActionMaker: function (maker) {
+      makeUndoAction = maker;
+    },
+    dispose: function () { /* ko.unwatch(model, reactorOptions, changePusher); */
+      res.dispose();
+    },
   };
 };
 

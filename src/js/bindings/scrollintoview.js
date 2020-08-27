@@ -1,17 +1,17 @@
-"use strict";
+'use strict';
 
-var $ = require("jquery");
-var ko = require("knockout");
-var console = require("console");
+var $ = require('jquery');
+var ko = require('knockout');
+var console = require('console');
 
-var _scrollIntoView = function($element, alignTop, scrollParent, moveBy) {
+var _scrollIntoView = function ($element, alignTop, scrollParent, moveBy) {
   var currentScrollTop = scrollParent.scrollTop();
   var newScrollTop = currentScrollTop - moveBy - (alignTop ? 20 : -20);
   // iframe scrolls the window and animation is not supported
   var animate = typeof scrollParent[0].nodeType !== 'undefined';
   if (animate) {
     var action = {
-      'scrollTop': "" + Math.round(newScrollTop) + "px"
+      'scrollTop': '' + Math.round(newScrollTop) + 'px',
     };
     var time = Math.round(Math.abs(newScrollTop - currentScrollTop));
     scrollParent.stop().animate(action, time);
@@ -23,7 +23,7 @@ var _scrollIntoView = function($element, alignTop, scrollParent, moveBy) {
 };
 
 ko.bindingHandlers.scrollIntoView = {
-  update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+  update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     var selected = ko.utils.unwrapObservable(valueAccessor());
     if (!selected) return;
     try {
@@ -76,8 +76,8 @@ ko.bindingHandlers.scrollIntoView = {
         // element.scrollIntoView(true);
       }
     } catch (e) {
-      console.log("TODO exception scrolling into view", e);
+      console.log('TODO exception scrolling into view', e);
     }
-  }
+  },
 };
 ko.virtualElements.allowedBindings['scrollIntoView'] = true;

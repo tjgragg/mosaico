@@ -1,19 +1,19 @@
-"use strict";
+'use strict';
 /* global global: false */
 
-var $ = require("jquery");
-var ko = require("knockout");
-var kojqui = require("knockout-jqueryui"); // just for the widget plugins
-var templateConverter = require("./converter/main.js");
-var console = require("console");
-var initializeViewmodel = require("./viewmodel.js");
+var $ = require('jquery');
+var ko = require('knockout');
+var kojqui = require('knockout-jqueryui'); // just for the widget plugins
+var templateConverter = require('./converter/main.js');
+var console = require('console');
+var initializeViewmodel = require('./viewmodel.js');
 var templateSystem = require('./bindings/choose-template.js');
 
-if (!$.ui.version.match(/^1\.11\..*$/)) throw "Usupported jQuery UI version detected: "+$.ui.version+" (we only support 1.11.*)";
+if (!$.ui.version.match(/^1\.11\..*$/)) throw 'Usupported jQuery UI version detected: ' + $.ui.version + ' (we only support 1.11.*)';
 
 // call a given method on every plugin implementing it.
 // supports a "reverse" parameter to call the methods from the last one to the first one.
-var pluginsCall = function(plugins, methodName, args, reverse) {
+var pluginsCall = function (plugins, methodName, args, reverse) {
   var start, end, diff, res, results;
   results = [];
   if (typeof reverse !== 'undefined' && reverse) {
@@ -37,21 +37,21 @@ var pluginsCall = function(plugins, methodName, args, reverse) {
 // workaround for knockout-jqueryui's buttonset/button disposal:
 // https://github.com/gvas/knockout-jqueryui/issues/25
 var origDisposeCallback = ko.utils.domNodeDisposal.addDisposeCallback;
-ko.utils.domNodeDisposal.addDisposeCallback = function(node, callback) {
-  var newCallback = function(node) {
+ko.utils.domNodeDisposal.addDisposeCallback = function (node, callback) {
+  var newCallback = function (node) {
     try {
       callback(node);
     } catch (e) {
       // this wrapper catches "expected" exceptions
-      if (typeof console.debug == 'function') console.debug("Caught unexpected dispose callback exception", e);
+      if (typeof console.debug == 'function') console.debug('Caught unexpected dispose callback exception', e);
     }
   };
   origDisposeCallback(node, newCallback);
 };
 
-var bindingPluginMaker = function(performanceAwareCaller) {
+var bindingPluginMaker = function (performanceAwareCaller) {
   return {
-    viewModel: function(viewModel) {
+    viewModel: function (viewModel) {
       try {
         performanceAwareCaller('applyBindings', ko.applyBindings.bind(undefined, viewModel));
       } catch (err) {
@@ -59,18 +59,18 @@ var bindingPluginMaker = function(performanceAwareCaller) {
         throw err;
       }
     },
-    dispose: function() {
+    dispose: function () {
       try {
         performanceAwareCaller('unapplyBindings', ko.cleanNode.bind(this, global.document.body));
       } catch (err) {
         console.warn(err, err.stack);
         throw err;
       }
-    }
+    },
   };
 };
 
-var templateCreator = function(templatePlugin, htmlOrElement, optionalName, templateMode) {
+var templateCreator = function (templatePlugin, htmlOrElement, optionalName, templateMode) {
   var tmpName = optionalName;
   if (typeof optionalName != 'undefined' && typeof templateMode != 'undefined') {
     if (typeof htmlOrElement != 'object' || htmlOrElement.tagName.toLowerCase() != 'replacedhtml') tmpName += '-' + templateMode;
@@ -91,10 +91,10 @@ var templateCreator = function(templatePlugin, htmlOrElement, optionalName, temp
 
     // $head.attr('data-bind', 'block: content');
     $head.children().detach();
-    $head.html("<!-- ko block: content --><!-- /ko -->");
+    $head.html('<!-- ko block: content --><!-- /ko -->');
     $head.before('<!-- ko withProperties: { templateMode: \'head\' } -->');
     $head.after('<!-- /ko -->');
-    $body.html("<!-- ko block: content --><!-- /ko -->");
+    $body.html('<!-- ko block: content --><!-- /ko -->');
 
     templatePlugin.adder(tmpName + '-iframe', $el[0].outerHTML);
 
@@ -111,19 +111,19 @@ var templateCreator = function(templatePlugin, htmlOrElement, optionalName, temp
 function _viewModelPluginInstance(pluginFunction) {
   var instance;
   return {
-    viewModel: function(viewModel) {
+    viewModel: function (viewModel) {
       instance = pluginFunction(viewModel);
     },
-    init: function() {
+    init: function () {
       if (typeof instance !== 'undefined' && typeof instance.init !== 'undefined') instance.init();
     },
-    dispose: function() {
+    dispose: function () {
       if (typeof instance !== 'undefined' && typeof instance.dispose !== 'undefined') instance.dispose();
-    }
+    },
   };
 }
 
-var _templateUrlConverter = function(basePath, url) {
+var _templateUrlConverter = function (basePath, url) {
   if (!url.match(/^[^\/]*:/) && !url.match(/^\//) && !url.match(/^\[/) && !url.match(/^#?$/)) {
     // TODO this could be smarter joining the urls...
     return basePath + url;
@@ -132,9 +132,9 @@ var _templateUrlConverter = function(basePath, url) {
   }
 };
 
-var templateLoader = function(performanceAwareCaller, templateFileName, templateMetadata, jsorjson, extensions, galleryUrl) {
+var templateLoader = function (performanceAwareCaller, templateFileName, templateMetadata, jsorjson, extensions, galleryUrl) {
   var templateFile = typeof templateFileName == 'string' ? templateFileName : templateMetadata.template;
-  var templatePath = "./";
+  var templatePath = './';
   var p = templateFile.lastIndexOf('/');
   if (p != -1) {
     templatePath = templateFile.substr(0, p + 1);
@@ -148,33 +148,33 @@ var templateLoader = function(performanceAwareCaller, templateFileName, template
       template: templateFile,
       // TODO l10n?
       name: 'No name',
-      created: Date.now()
+      created: Date.now(),
     };
   } else {
     metadata = templateMetadata;
   }
 
-  $.get(templateFile, function(templatecode) {
-    var res = templateCompiler(performanceAwareCaller, templateUrlConverter, "template", templatecode, jsorjson, metadata, extensions, galleryUrl);
+  $.get(templateFile, function (templatecode) {
+    var res = templateCompiler(performanceAwareCaller, templateUrlConverter, 'template', templatecode, jsorjson, metadata, extensions, galleryUrl);
     res.init();
   });
 };
 
-var templateCompiler = function(performanceAwareCaller, templateUrlConverter, templateName, templatecode, jsorjson, metadata, extensions, galleryUrl) {
+var templateCompiler = function (performanceAwareCaller, templateUrlConverter, templateName, templatecode, jsorjson, metadata, extensions, galleryUrl) {
   // we strip content before <html> tag and after </html> because jquery doesn't parse it.
   // we'll keep it "raw" and use it in the preview/output methods.
   var res = templatecode.match(/^([\S\s]*)([<]html[^>]*>[\S\s]*<\/html>)([\S\s]*)$/i);
-  if (res === null) throw "Unable to find <html> opening and closing tags in the template";
+  if (res === null) throw 'Unable to find <html> opening and closing tags in the template';
   var prefix = res[1];
   // we parse the html content after replacing the tag name for html/head/body so to avoid jquery issues in parsing.
-  var basicStructure = { '<html': 0, '<head': 0, '<body': 0, '</html': 0, '</body': 0, '</head': 0 };
-  var html = res[2].replace(/(<\/?)(html|head|body)([^>]*>)/gi, function(match, p1, p2, p3) {
-    basicStructure[(p1+p2).toLowerCase()] += 1;
+  var basicStructure = {'<html': 0, '<head': 0, '<body': 0, '</html': 0, '</body': 0, '</head': 0};
+  var html = res[2].replace(/(<\/?)(html|head|body)([^>]*>)/gi, function (match, p1, p2, p3) {
+    basicStructure[(p1 + p2).toLowerCase()] += 1;
     return p1 + 'replaced' + p2 + p3;
   });
   for (var ele in basicStructure) if (basicStructure.hasOwnProperty(ele)) if (basicStructure[ele] != 1) {
-    if (basicStructure[ele] === 0) throw "ERROR: missing mandatory element "+ele+">";
-    if (basicStructure[ele] > 1) throw "ERROR: multiple element "+ele+"> occourences are not supported (found "+basicStructure[ele]+" occourences)";
+    if (basicStructure[ele] === 0) throw 'ERROR: missing mandatory element ' + ele + '>';
+    if (basicStructure[ele] > 1) throw 'ERROR: multiple element ' + ele + '> occourences are not supported (found ' + basicStructure[ele] + ' occourences)';
   }
   var postfix = res[3];
   var blockDefs = [];
@@ -196,25 +196,25 @@ var templateCompiler = function(performanceAwareCaller, templateUrlConverter, te
 
   var createdTemplates = [];
   var templatesPlugin = {
-    adder: function(id, html) {
-      if (typeof html !== 'string') throw "Template system: cannot create new template " + id;
+    adder: function (id, html) {
+      if (typeof html !== 'string') throw 'Template system: cannot create new template ' + id;
       var trash = html.match(/(data)?-ko-[^ =:]*/g);
       if (trash) {
-        console.error("ERROR: found unexpected -ko- attribute in compiled template", id, ", you probably mispelled it:", trash);
+        console.error('ERROR: found unexpected -ko- attribute in compiled template', id, ', you probably mispelled it:', trash);
       }
       templateSystem.addTemplate(id, html);
       createdTemplates.push(id);
     },
-    exists: function(id) {
+    exists: function (id) {
       var el = templateSystem.getTemplateContent(id);
       if (typeof el !== 'undefined') return true;
       else return false;
     },
-    dispose: function() {
+    dispose: function () {
       for (var i = createdTemplates.length - 1; i >= 0; i--) {
         templateSystem.removeTemplate(createdTemplates[i]);
       }
-    }
+    },
   };
 
   ko.bindingHandlers['block'].templateExists = templatesPlugin.exists;
@@ -249,20 +249,20 @@ var templateCompiler = function(performanceAwareCaller, templateUrlConverter, te
     var checkModelRes = performanceAwareCaller('checkModel', templateConverter.checkModel.bind(undefined, content._unwrap(), blockDefs, unwrapped));
     // if checkModelRes is 1 then the model is not fully compatible but we fixed it
     if (checkModelRes == 2) {
-      console.error("Trying to compile an incompatible template version!", content._unwrap(), blockDefs, unwrapped);
+      console.error('Trying to compile an incompatible template version!', content._unwrap(), blockDefs, unwrapped);
       incompatibleTemplate = true;
     }
 
     try {
       content._wrap(unwrapped);
     } catch (ex) {
-      console.error("Unable to inject model content!", ex);
+      console.error('Unable to inject model content!', ex);
       incompatibleTemplate = true;
     }
   }
 
   // This build the template for the preview/output, but concatenating prefix, template and content and stripping the "replaced" prefix added to "problematic" tag (html/head/body)
-  var iframeTpl = prefix + templateSystem.getTemplateContent(templateName + '-iframe').replace(/(<\/?)replaced(html|head|body)([^>]*>)/gi, function(match, p1, p2, p3) {
+  var iframeTpl = prefix + templateSystem.getTemplateContent(templateName + '-iframe').replace(/(<\/?)replaced(html|head|body)([^>]*>)/gi, function (match, p1, p2, p3) {
     return p1 + p2 + p3;
   }) + postfix;
 
@@ -270,9 +270,9 @@ var templateCompiler = function(performanceAwareCaller, templateUrlConverter, te
   var origiFrameTpl = ko.bindingHandlers.bindIframe.tpl;
   ko.bindingHandlers.bindIframe.tpl = iframeTpl;
   var iFramePlugin = {
-    dispose: function() {
+    dispose: function () {
       ko.bindingHandlers.bindIframe.tpl = origiFrameTpl;
-    }
+    },
   };
 
   plugins.push(iFramePlugin);
@@ -286,13 +286,13 @@ var templateCompiler = function(performanceAwareCaller, templateUrlConverter, te
   // This will be replaced by browserify-versionify during the build
   var editver = '__VERSION__';
   if (typeof viewModel.metadata.editorversion !== 'undefined' && viewModel.metadata.editorversion !== editver) {
-    console.log("The model being loaded has been created with a different editor version", viewModel.metadata.editorversion, "runtime:", editver);
+    console.log('The model being loaded has been created with a different editor version', viewModel.metadata.editorversion, 'runtime:', editver);
   }
   viewModel.metadata.editorversion = editver;
 
   if (typeof templateDef.version !== 'undefined') {
     if (typeof viewModel.metadata.templateversion !== 'undefined' && viewModel.metadata.templateversion !== templateDef.version) {
-      console.log("The model being loaded has been created with a different template version", viewModel.metadata.templateversion, "runtime:", templateDef.version);
+      console.log('The model being loaded has been created with a different template version', viewModel.metadata.templateversion, 'runtime:', templateDef.version);
     }
     viewModel.metadata.templateversion = templateDef.version;
   }
@@ -309,30 +309,29 @@ var templateCompiler = function(performanceAwareCaller, templateUrlConverter, te
       modal: true,
       appendTo: '#mo-body',
       buttons: {
-        Ok: function() {
-          $(this).dialog("close");
-        }
-      }
+        Ok: function () {
+          $(this).dialog('close');
+        },
+      },
     });
   }
 
   return {
     model: viewModel,
-    init: function() {
+    init: function () {
       pluginsCall(plugins, 'init', undefined, true);
     },
-    dispose: function() {
+    dispose: function () {
       pluginsCall(plugins, 'dispose', undefined, true);
-    }
+    },
   };
 
 };
 
-
-var checkFeature = function(feature, func) {
+var checkFeature = function (feature, func) {
   if (!func()) {
-    console.warn("Missing required browser feature", feature);
-    throw "Missing required browser feature: " + feature;
+    console.warn('Missing required browser feature', feature);
+    throw 'Missing required browser feature: ' + feature;
   }
 };
 
@@ -341,34 +340,34 @@ var checkFeature = function(feature, func) {
  * Returns true/false unless "detailedException" parameter is true:
  * in this case returns true or an exception with the problem detail.
  */
-var isCompatible = function(detailedException) {
+var isCompatible = function (detailedException) {
   try {
     // window.msMatchMedia would match also IE9
     // IE9 wouldn't be so hard to support, but it doesn't worth it. (preview iframe and automatic scroll are 2 things not working in IE9)
-    checkFeature('matchMedia', function() {
+    checkFeature('matchMedia', function () {
       return typeof global.matchMedia != 'undefined';
     });
-    checkFeature('XMLHttpRequest 2', function() {
+    checkFeature('XMLHttpRequest 2', function () {
       return 'XMLHttpRequest' in global && 'withCredentials' in new global.XMLHttpRequest();
     });
-    checkFeature('ES5 strict', function() {
-      return function() { /* "use strict";*/
+    checkFeature('ES5 strict', function () {
+      return function () { /* "use strict";*/
         return typeof this == 'undefined';
       }();
     });
-    checkFeature('CSS borderRadius', function() {
+    checkFeature('CSS borderRadius', function () {
       return typeof global.document.body.style['borderRadius'] != 'undefined';
     });
-    checkFeature('CSS boxShadow', function() {
+    checkFeature('CSS boxShadow', function () {
       return typeof global.document.body.style['boxShadow'] != 'undefined';
     });
-    checkFeature('CSS boxSizing', function() {
+    checkFeature('CSS boxSizing', function () {
       return typeof global.document.body.style['boxSizing'] != 'undefined';
     });
-    checkFeature('CSS backgroundSize', function() {
+    checkFeature('CSS backgroundSize', function () {
       return typeof global.document.body.style['backgroundSize'] != 'undefined';
     });
-    checkFeature('CSS backgroundOrigin', function() {
+    checkFeature('CSS backgroundOrigin', function () {
       return typeof global.document.body.style['backgroundOrigin'] != 'undefined';
     });
     checkBadBrowserExtensions();
@@ -379,70 +378,70 @@ var isCompatible = function(detailedException) {
   }
 };
 
-var checkBadBrowserExtensions = function() {
+var checkBadBrowserExtensions = function () {
   var id = 'checkbadbrowsersframe';
   var origTpl = ko.bindingHandlers.bindIframe.tpl;
-  ko.bindingHandlers.bindIframe.tpl = "<!DOCTYPE html>\r\n<html>\r\n<head><title>A</title>\r\n</head>\r\n<body><p align=\"right\" data-bind=\"attr: { align: 'left' }\">B</p><div data-bind=\"text: content\"></div></body>\r\n</html>\r\n";
+  ko.bindingHandlers.bindIframe.tpl = '<!DOCTYPE html>\r\n<html>\r\n<head><title>A</title>\r\n</head>\r\n<body><p align="right" data-bind="attr: { align: \'left\' }">B</p><div data-bind="text: content"></div></body>\r\n</html>\r\n';
   $('body').append('<iframe id="' + id + '" data-bind="bindIframe: $data"></iframe>');
   var frameEl = global.document.getElementById(id);
-  ko.applyBindings({ content: "dummy content" }, frameEl);
+  ko.applyBindings({content: 'dummy content'}, frameEl);
   // Obsolete method didn't work on IE11 when using "HTML5 doctype":
   // var docType = new XMLSerializer().serializeToString(global.document.doctype);
   var node = frameEl.contentWindow.document.doctype;
-  var docType = "<!DOCTYPE " + node.name +
+  var docType = '<!DOCTYPE ' + node.name +
     (node.publicId ? ' PUBLIC "' + node.publicId + '"' : '') +
     (!node.publicId && node.systemId ? ' SYSTEM' : '') +
     (node.systemId ? ' "' + node.systemId + '"' : '') + '>';
-  var content = docType + "\n" + frameEl.contentWindow.document.documentElement.outerHTML;
+  var content = docType + '\n' + frameEl.contentWindow.document.documentElement.outerHTML;
   ko.cleanNode(frameEl);
   ko.removeNode(frameEl);
   ko.bindingHandlers.bindIframe.tpl = origTpl;
 
-  var expected = "<!DOCTYPE html>\n<html><head><title>A</title>\n</head>\n<body><p align=\"left\" data-bind=\"attr: { align: 'left' }\">B</p><div data-bind=\"text: content\">dummy content</div>\n\n</body></html>";
+  var expected = '<!DOCTYPE html>\n<html><head><title>A</title>\n</head>\n<body><p align="left" data-bind="attr: { align: \'left\' }">B</p><div data-bind="text: content">dummy content</div>\n\n</body></html>';
   // Firefox changes the attributes order.
-  var expected2 = "<!DOCTYPE html>\n<html><head><title>A</title>\n</head>\n<body><p data-bind=\"attr: { align: 'left' }\" align=\"left\">B</p><div data-bind=\"text: content\">dummy content</div>\n\n</body></html>";
+  var expected2 = '<!DOCTYPE html>\n<html><head><title>A</title>\n</head>\n<body><p data-bind="attr: { align: \'left\' }" align="left">B</p><div data-bind="text: content">dummy content</div>\n\n</body></html>';
   if (expected !== content && expected2 !== content) {
-    console.info("BadBrowser.FrameContentCheck", content.length, expected.length, expected2.length, content == expected, content == expected2);
-    console.warn("Detected incompatible/misbehaving browser, probably introduced by a bad browser extension.");
+    console.info('BadBrowser.FrameContentCheck', content.length, expected.length, expected2.length, content == expected, content == expected2);
+    console.warn('Detected incompatible/misbehaving browser, probably introduced by a bad browser extension.');
     console.warn(content);
-    throw "Detected misbehaving browser/extension: unexpected frame content.";
+    throw 'Detected misbehaving browser/extension: unexpected frame content.';
   }
 };
 
-var fixPageEvents = function() {
+var fixPageEvents = function () {
   // This is global code to prevent dragging/dropping in the page where we don't deal with it.
   // IE8 doesn't have window.addEventListener, but doesn't support drag&drop too.
   if (global.addEventListener) {
     // prevent generic file droppping in the page
-    global.addEventListener("drag", function(e) {
+    global.addEventListener('drag', function (e) {
       // console.log("browser is using drag listener on window");
       e = e || global.event;
       e.preventDefault();
     }, false);
-    global.addEventListener("dragstart", function(e) {
+    global.addEventListener('dragstart', function (e) {
       // console.log("browser is using dragstart listener on window");
       e = e || global.event;
       e.preventDefault();
     }, false);
-    global.addEventListener("dragover", function(e) {
+    global.addEventListener('dragover', function (e) {
       // this is called on mouse move on every supported browser.
       // console.log("browser is using dragover listener on window");
       e = e || global.event;
       e.preventDefault();
     }, false);
-    global.addEventListener("drop", function(e) {
+    global.addEventListener('drop', function (e) {
       // console.log("browser is using drop listener on window");
       e = e || global.event;
       e.preventDefault();
     }, false);
-    global.document.body.addEventListener('drop', function(e) {
+    global.document.body.addEventListener('drop', function (e) {
       // I browser supportati entrato tutti qui quando si droppa qualcosa sul body
       // console.log("browser is using drop listener on body tag");
       e.preventDefault();
     }, false);
   }
   if (global.document.ondragstart) {
-    global.document.ondragstart = function() {
+    global.document.ondragstart = function () {
       // console.log("browser called ondragstart. return false!");
       return false;
     };
@@ -453,5 +452,5 @@ module.exports = {
   compile: templateCompiler,
   load: templateLoader,
   isCompatible: isCompatible,
-  fixPageEvents: fixPageEvents
+  fixPageEvents: fixPageEvents,
 };

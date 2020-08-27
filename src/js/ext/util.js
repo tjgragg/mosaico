@@ -1,4 +1,4 @@
-var utilPlugin = function(vm) {
+var utilPlugin = function (vm) {
   global.Util = {
     'decodeURI': decodeURI,
     'encodeURI': encodeURI,
