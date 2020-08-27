@@ -1,56 +1,56 @@
-'use strict';
+"use strict";
 /* global global: false */
-var console = require('console');
-var ko = require('knockout');
-var $ = require('jquery');
+var console = require("console");
+var ko = require("knockout");
+var $ = require("jquery");
 
-var lsLoader = function (hash_key, emailProcessorBackend) {
-  var mdStr = global.localStorage.getItem('metadata-' + hash_key);
+var lsLoader = function(hash_key, emailProcessorBackend) {
+  var mdStr = global.localStorage.getItem("metadata-" + hash_key);
   if (mdStr !== null) {
     var model;
-    var td = global.localStorage.getItem('template-' + hash_key);
+    var td = global.localStorage.getItem("template-" + hash_key);
     if (td !== null) model = JSON.parse(td);
     var md = JSON.parse(mdStr);
     return {
       metadata: md,
       model: model,
-      extension: lsCommandPluginFactory(md, emailProcessorBackend),
+      extension: lsCommandPluginFactory(md, emailProcessorBackend)
     };
   } else {
-    throw 'Cannot find stored data for ' + hash_key;
+    throw "Cannot find stored data for "+hash_key;
   }
 };
 
-var lsCommandPluginFactory = function (md, emailProcessorBackend) {
-  var commandsPlugin = function (mdkey, mdname, viewModel) {
+var lsCommandPluginFactory = function(md, emailProcessorBackend) {
+  var commandsPlugin = function(mdkey, mdname, viewModel) {
 
     // console.log("loading from metadata", md, model);
     var saveCmd = {
       name: 'Save', // l10n happens in the template
-      enabled: ko.observable(true),
+      enabled: ko.observable(true)
     };
-    saveCmd.execute = function () {
+    saveCmd.execute = function() {
       console.log('output? ', viewModel.exportHTML());
       saveCmd.enabled(false);
       viewModel.metadata.changed = Date.now();
       if (typeof viewModel.metadata.key == 'undefined') {
-        console.warn('Unable to find key in metadata object...', viewModel.metadata);
+        console.warn("Unable to find key in metadata object...", viewModel.metadata);
         viewModel.metadata.key = mdkey;
       }
-      global.localStorage.setItem('metadata-' + mdkey, viewModel.exportMetadata());
-      global.localStorage.setItem('template-' + mdkey, viewModel.exportJSON());
+      global.localStorage.setItem("metadata-" + mdkey, viewModel.exportMetadata());
+      global.localStorage.setItem("template-" + mdkey, viewModel.exportJSON());
       saveCmd.enabled(true);
     };
     var downloadCmd = {
       name: 'Download', // l10n happens in the template
-      enabled: ko.observable(true),
+      enabled: ko.observable(true)
     };
-    downloadCmd.execute = function () {
+    downloadCmd.execute = function() {
       downloadCmd.enabled(false);
-      viewModel.notifier.info(viewModel.t('Downloading...'));
+      viewModel.notifier.info(viewModel.t("Downloading..."));
       viewModel.exportHTMLtoTextarea('#downloadHtmlTextarea');
       var postUrl = emailProcessorBackend ? emailProcessorBackend : '/dl/';
-      global.document.getElementById('downloadForm').setAttribute('action', postUrl);
+      global.document.getElementById('downloadForm').setAttribute("action", postUrl);
       global.document.getElementById('downloadForm').submit();
       downloadCmd.enabled(true);
     };

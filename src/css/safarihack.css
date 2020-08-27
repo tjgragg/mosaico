@@ -13,18 +13,14 @@ So we broadened the application of this hack to include Chrome.
   See: https://developer.mozilla.org/en-US/docs/Web/CSS/@media
 We have no reports of side effects on Firefox resulting from this code being enabled.
 */
-@media screen and (min-color-index: 0) and (-webkit-min-device-pixel-ratio: 0) {
-  @media {
-    #main-wysiwyg-area table:not(.img-wysiwyg), #main-wysiwyg-area .selected table:not(.img-wysiwyg):hover {
-      position: relative;
-    }
-
-    #main-wysiwyg-area table:not(.img-wysiwyg):hover, #main-wysiwyg-area .selected table:not(.img-wysiwyg) {
-      position: static;
-    }
+@media screen and (min-color-index:0) and (-webkit-min-device-pixel-ratio:0) { @media {
+  #main-wysiwyg-area table:not(.img-wysiwyg), #main-wysiwyg-area .selected table:not(.img-wysiwyg):hover {
+    position: relative;
   }
-}
-
+  #main-wysiwyg-area table:not(.img-wysiwyg):hover, #main-wysiwyg-area .selected table:not(.img-wysiwyg) {
+    position: static;
+  }
+}}
 /*
 After enabling the dashed outlines for editable contents we had reports from webkit based
 browsers (Safari) users of flickering similar to the previous issues.
@@ -32,16 +28,14 @@ browsers (Safari) users of flickering similar to the previous issues.
 Please note there is no space between "and" and the following bracket because we only
 want to tarket webkit (Safari) and not blink (Chrome).
 */
-@media screen and (min-color-index: 0) and(-webkit-min-device-pixel-ratio: 0) {
-  @media {
-    #main-edit-area #main-wysiwyg-area:not(.isdragging):not(.isdraggingimg) .editable:hover .mce-content-body:not(.selecteditem):not(:hover):after,
-    #main-edit-area #main-wysiwyg-area:not(.isdragging):not(.isdraggingimg) .editable:hover .selectable-img:not(.selecteditem):not(:hover) .mo-imgselectionhelper {
-      visibility: hidden !important;
-      z-index: -1 !important;
-      opacity: 1 !important;
-      border-width: 0px 0px !important;
-      border-style: solid solid !important;
-    }
-
+@media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) { @media  {
+  #main-edit-area #main-wysiwyg-area:not(.isdragging):not(.isdraggingimg) .editable:hover .mce-content-body:not(.selecteditem):not(:hover):after,
+  #main-edit-area #main-wysiwyg-area:not(.isdragging):not(.isdraggingimg) .editable:hover .selectable-img:not(.selecteditem):not(:hover) .mo-imgselectionhelper {
+  	visibility: hidden !important;
+  	z-index: -1 !important;
+  	opacity: 1 !important;
+  	border-width: 0px 0px !important;
+    border-style: solid solid !important;
   }
-}
+
+}}

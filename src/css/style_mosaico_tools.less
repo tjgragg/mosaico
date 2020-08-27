@@ -11,58 +11,44 @@
 #main-toolbox {
   //font-size: 1.1em;
   line-height: normal;
-
+  
   .propEditor .propInput .checkbox-replacer {
     padding: 4px 2px;
     font-size: 1.2em;
   }
-
   .objLabel.level0, .pane-title {
     font-size: 1.2em;
   }
-
   .objLabel.level1 {
     font-size: 1.2em;
   }
-
   .noSelectedBlock, .customStyleHelp, .objEmpty, .galleryEmpty {
     font-size: 1.2em;
   }
-
   .propInput .data-select::after,
   .propInput .evo-pointer::before {
     width: 31px;
     padding: 0 10px;
   }
-
   .propInput .ui-textbutton .ui-textbutton-button.ui-button-icon-only {
     width: 30px;
     padding: 0;
-
     .ui-icon {
       margin: 0;
     }
   }
-
   .propInput .ui-spinner-button {
     width: 30px;
-
-    .ui-icon {
-      left: 6px;
-      top: 8px
-    }
+    .ui-icon { left: 6px; top: 8px }
   }
-
   .evo-pop .evo-more {
     font-size: 1em;
   }
 }
-
 #toolimages {
   .img-dropzone {
     position: relative;
   }
-
   .img-dropzone.ui-state-highlight:before {
     .makeDroppable();
     line-height: 45px;
@@ -70,11 +56,10 @@
     top: -10px;
     bottom: -10px;
   }
-
   .img-dropzone.ui-state-draghover:before {
     background-color: fade(@mosaico-selection-color, 80%);
     animation: none;
-  }
+  } 
 
   .uploadzone {
     font-size: 1.2em;
@@ -87,7 +72,7 @@
   @import "style_elements_jquery.less";
   @import "style_elements_input_range.less";
   @import (optional) "style_elements_qtip.less"; // TODO remove me
-
+  
   *,
   *:before,
   *:after {
@@ -95,7 +80,7 @@
     padding: 0;
     box-sizing: border-box;
   }
-
+  
   .ui-icon {
     overflow: visible; // preview icons to select desktop/tablet/smartphone are truncated without this.
   }
@@ -104,12 +89,12 @@
     display: inline-block;
     font-style: normal;
   }
-
+  
   .buttons {
     text-align: center;
     padding-top: 3px;
   }
-
+  
   .propInput {
     input[type=text], input[type=number], input[type=url], select {
       .input-style();
@@ -119,12 +104,10 @@
         border: @input-error-border-style;
       }
     }
-
     .data-select {
       display: block;
       .input-select();
     }
-
     .ui-textbutton {
       width: 100%;
 
@@ -161,22 +144,22 @@
       }
     }
   }
-
+  
   .propEditor {
     display: flex;
     align-items: center;
     width: 100%;
   }
-
+  
   .propLabel {
     padding: 8px 8px;
     padding-left: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 45%;
-    float: left;
-    text-align: right;
+    width: 45%; 
+    float: left; 
+    text-align: right; 
 
     // "?" for tooltips
     &[title]:before {
@@ -192,26 +175,19 @@
 
   }
 
-  .propInput {
+  .propInput { 
     width: 55%;
     float: left;
-
-    input, select {
-      width: 100%;
-    }
+    input,  select { width: 100%; }
   }
 
   .notnull.propEditor.checkboxes .propInput {
     width: 50%;
   }
 
-  .propCheck {
-    width: 5%;
-    float: left;
-    padding: 5px;
-    display: none;
+  .propCheck { 
+    width: 5%; float: left; padding: 5px; display: none;
   }
-
   .notnull .propCheck {
     display: block
   }
@@ -220,12 +196,11 @@
     content: "";
     display: table;
   }
-
+  
   .objEdit {
     display: block;
     width: 100%;
     /* background-color: rgba(0,0,0,0.02); */
-
     &.level1 {
       /* border-bottom: 2px solid #f1eee6; */
       background-color: @mosaico-background-color;
@@ -238,24 +213,21 @@
     font-size: 50%;
     color: @mosaico-shadow-color;
   }
-
   .label.notused:before {
     content: "[[[";
   }
-
   .label.notused:after {
     content: "]]]";
   }
 
   .objLabel.level2 {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255,255,255,0.7);
     float: left;
     position: absolute;
     display: none;
   }
-
   .objLabel.level3 {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255,255,255,0.4);
     float: left;
     position: absolute;
     top: 1em;
@@ -263,13 +235,12 @@
   }
 
   .objEdit.level1 {
-    /*  border-bottom: 2px solid #CCC; */
+  /*  border-bottom: 2px solid #CCC; */
     padding-top: 4px;
     padding-bottom: 2px;
     margin-bottom: 3px;
-    /*  padding: 2px; */
+  /*  padding: 2px; */
   }
-
   .objLabel.level1 {
     color: black;
     display: block;
@@ -310,7 +281,6 @@
     // margin: -4px -7px 6px -7px;
     margin: 0px -7px 8px -7px;
   }
-
   .supportsCustomStyles .objLabel.level0 {
     margin-right: 70px;
   }
@@ -326,11 +296,9 @@
   .objEdit {
     position: relative;
   }
-
   .objEdit.level1 {
     margin-top: 15px;
   }
-
   .objPreview {
     width: 50px;
     height: 50px;
@@ -352,7 +320,6 @@
     /* border-bottom: 2px solid #CCC; */
     padding: 2px;
   }
-
   .objEdit .propEditor {
     padding: 2px 0;
     border: 0;
@@ -369,12 +336,10 @@
     font-weight: bold;
     /* background-color: #FFFF80; */
   }
-
-  .propEditor.notnull input,
+  .propEditor.notnull input, 
   .propEditor.notnull select {
     font-weight: bold;
   }
-
   .propEditor.notnull input[type=checkbox] {
     font-weight: normal;
   }
@@ -420,14 +385,15 @@
     }
 
 
+
   }
 
   .propInput .evo-pointer {
     position: absolute;
     .input-style();
     margin: 0;
-    //  right: 4px;
-    //  top: 6px;
+  //  right: 4px;
+  //  top: 6px;
     z-index: 5;
 
     left: 0px;
@@ -467,7 +433,7 @@
 
   .objEdit input[type=checkbox] {
     display: none;
-
+  
     & + .checkbox-replacer {
       width: 1.28571429em;
       display: block;
@@ -475,9 +441,8 @@
       // Rompe IE10
       // visibility: hidden;
     }
-
-    /* , &:checked + .checkbox-replacer:before */
-
+    
+    /* , &:checked + .checkbox-replacer:before */ 
     & + .checkbox-replacer:before {
       .makeFontAwesome();
     }
@@ -487,14 +452,13 @@
     &:checked + .checkbox-replacer:before {
       content: '\f205'; /* '\f096'; */
     }
-
     & + .checkbox-replacer:before {
       font-size: 150%;
       text-align: center;
       content: '\f204'; /* '\f14a'; */
     }
   }
-
+  
   .propCheck input[type=checkbox] {
     &:checked + .checkbox-replacer:before {
       content: "\f041"; /* tondo con punto '\f192';*/ /* '\f140'; *//* '\f14a'; */
@@ -502,7 +466,6 @@
       font-size: 14px;
       opacity: 1;
     }
-
     & + .checkbox-replacer:before {
       content: '\f0ac'; /* asterisco "\f069"; *//* '\f096'; */
       content: "\f1b3"; /* cubi */
@@ -510,7 +473,7 @@
       opacity: .8;
     }
   }
-
+  
   .propInput .ui-spinner {
     width: 100%;
     margin: 0;
@@ -533,7 +496,7 @@
     text-decoration: underline;
     cursor: help;
   }
-
+  
   .noSelectedBlock, .customStyleHelp, .objEmpty, .galleryEmpty, .blockDescription {
     padding: 1em;
     margin-bottom: .5em;
@@ -550,7 +513,7 @@
   /***************
    * COLOR PICKER
    ***************/
-
+  
   .evo-pop {
     right: 0;
     width: auto;
@@ -562,11 +525,9 @@
       padding: 12px;
       border: none;
     }
-
     .evo-palette th, .evo-palette-ie th, .evo-palette2 th {
       border: none;
     }
-
     .evo-palette, .evo-palette-ie, .evo-palette2 {
       border-spacing: 0px 0px;
       margin: 0 auto;
@@ -598,10 +559,9 @@
       font-size: 17px;
       margin: 5px 0 4px 4px;
     }
-
+    
     .evo-more {
       padding: 4px 5px;
-
       a {
         margin-right: 1em;
       }
@@ -616,34 +576,26 @@
 
 #toolbar {
   padding: 5px 10px;
-
+  
   .button, .ui-button, .button_dropdown_split {
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: 0; margin-bottom: 0;
   }
 
   ul.top_right_links {
     float: right;
-
     .dropdown {
       margin: .2em 0 0 0;
     }
   }
-
+  
   // When screen is not big enough to show the preview sidebar, let's hide the preview button
   @media (max-width: (@screen-lg-max) ) {
     label[for=previewFrameToggle] {
       display: none;
     }
-
     .ui-button[for=showGallery] {
-      .ui-icon {
-        margin-right: 0
-      }
-
-      .ui-button-text {
-        display: none
-      }
+      .ui-icon { margin-right: 0 }
+      .ui-button-text { display: none }
     }
   }
 
@@ -654,7 +606,6 @@
   .rightButtons {
     float: right;
   }
-
   #downloadForm {
     display: inline-block;
   }
@@ -670,17 +621,16 @@
     height: 100%;
     overflow: hidden;
   }
-
+  
   #tooltabs.ui-tabs {
     overflow: hidden;
-
     .ui-tabs-panel {
       top: @topbar-height;
       overflow-y: auto;
       overflow-x: hidden;
       z-index: 100;
     }
-
+    
     .ui-tabs-nav {
       font-size: 1.2em;
       padding: 0px 0px 0px 4px;
@@ -693,7 +643,6 @@
           width: 100%;
           padding: 0 .5em;
         }
-
         /*
         a {
           background-color: @mosaico-button-background-color;
@@ -715,10 +664,8 @@
         }*/
       }
     }
-
     .ui-tabs-panel {
-      margin: 0;
-      padding: 0.7em;
+      margin: 0; padding: 0.7em;
       position: absolute;
       bottom: @ui-tabs-panel-padding;
       left: @ui-tabs-panel-padding;
@@ -726,13 +673,12 @@
       z-index: 100;
       background-color: @mosaico-background-color;
     }
-
+    
   }
-
+  
   .draggable-item {
     display: inline-block;
   }
-
   .draggable {
     width: 100px;
     height: 100px;
@@ -741,21 +687,18 @@
     z-index: 100;
     display: inline-block;
   }
-
+  
   .draggable-item .block {
     // margin: 3px;
     .handle {
       cursor: move;
       z-index: 120;
       position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 20px;
-      right: 20px;
+      top: 0; bottom: 0;
+      left: 20px; right: 20px;
       // outline: 1px solid green;
     }
   }
-
   .draggable-item {
     position: relative;
 
@@ -787,7 +730,6 @@
     .image {
       box-shadow: 0 0 15px @mosaico-shadow-color;
     }
-
     .block {
       // outline: 2px solid red;
       img {
@@ -795,11 +737,10 @@
       }
     }
   }
-
+  
   .blockType {
     display: none;
   }
-
   .block-list {
     // suppongo che le immagini siano create per i 340px
     max-width: 346px;
@@ -810,7 +751,7 @@
   .block-list .draggable-item img {
     width: 100%;
   }
-
+  
   .objEdit.level1.selectable {
     .makeSelectable(5px, ~'.selecteditem', 0);
   }
@@ -826,13 +767,13 @@
     }
     */
   }
-
+  
   .blockCheck input[type=checkbox] {
-
+  
     & + .checkbox-replacer {
       width: 56px;
     }
-
+  
     & + .checkbox-replacer:after {
       .makeFontAwesome;
     }
@@ -881,18 +822,16 @@
       // opacity: 0.5;
       z-index: 0;
     }
-
     & + .checkbox-replacer:after {
       padding-left: 4px;
       padding-right: 2px;
     }
-
     &:checked + .checkbox-replacer:before {
       padding-left: 2px;
       padding-right: 4px;
     }
 
-
+    
     &:checked + .checkbox-replacer:after,
     & + .checkbox-replacer:before {
       .button-style();
@@ -908,41 +847,25 @@
     }
 
   }
-
+  
   /* while local-editing we always show the local editor */
-
   .workLocal {
-    .propInput.global, .propInput.global * {
-      display: none;
-    }
+    .propInput.global, .propInput.global * { display: none; }
   }
-
   /* while global-editing show the global editor unless it is overwritten (not null) */
-
   .workGlobal {
-    .propInput.local.default, .propInput.local.default * {
-      display: none;
-    }
-
-    .propInput.global.overridden, .propInput.global.overridden * {
-      display: none;
-    }
+    .propInput.local.default, .propInput.local.default * { display: none; }
+    .propInput.global.overridden, .propInput.global.overridden * { display: none; }
   }
 
   .workGlobalContent {
-    .propInput.local, .propInput.local * {
-      display: none;
-    }
-
-    .blockCheck {
-      display: none;
-    }
-
+    .propInput.local, .propInput.local * { display: none; }
+    .blockCheck { display: none; }
     .objLabel.level0 {
       margin-right: 0;
     }
   }
-
+  
   .customStyled span {
     display: none;
   }
@@ -958,12 +881,11 @@
     opacity: 1;
   }
 
-
+  
   #tooldebug {
     overflow: auto;
   }
 }
-
 .mo-standalone #main-toolbox #tooltabs.ui-tabs > .ui-tabs-nav {
   padding-left: 40px;
 }
@@ -977,33 +899,22 @@
 }
 
 @keyframes slideright {
-  0% {
-    left: -(@leftsidebar-width+50px)
-  }
-  100% {
-    left: 0
-  }
+  0% { left: -(@leftsidebar-width+50px) }
+  100% { left: 0 }
 }
-
 @keyframes slideleft {
-  0% {
-    left: 0
-  }
-  100% {
-    left: -(@leftsidebar-width+50px)
-  }
+  0% { left: 0 }
+  100% { left: -(@leftsidebar-width+50px) }
 }
 
 #toolimages {
   .pane {
     text-align: center;
   }
-
   .loadbutton, .galleryPager {
     margin: .5em;
   }
 }
-
 .slidebar {
   z-index: 200;
   position: absolute;
@@ -1014,7 +925,7 @@
   border-radius: 0;
   background-color: @mosaico-background-color;
   box-shadow: 1px 0px 3px @mosaico-shadow-color;
-
+  
   .close {
     float: right;
     visibility: hidden;
@@ -1034,19 +945,18 @@
       height: 24px;
     }
   }
-
+  
   .pane {
     background-color: @mosaico-background-color;
     border-radius: 5px;
     margin: 5px;
     padding: 5px;
   }
-
   .pane-title {
     padding: 5px;
     display: block;
   }
-
+  
 }
 
 .slidebar.hidden {
@@ -1056,15 +966,13 @@
 
 #toolimagestab {
   padding: 0.2em;
-
+  
   ul.ui-tabs-nav {
     padding: 0;
   }
-
   li.ui-state-active a {
     background: none repeat scroll 0% 0% #FFF;
   }
-
   .ui-tabs-panel {
     display: block;
     margin-top: 0;
@@ -1082,8 +990,7 @@
 
 #main-preview {
   .button, .ui-button, .button_dropdown_split {
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: 0; margin-bottom: 0;
   }
 }
 
@@ -1108,7 +1015,7 @@
 }
 
 #frame-container > iframe {
-
+  
   border: 0;
   box-sizing: border-box;
   padding: 0 6px;
@@ -1131,7 +1038,7 @@
 
 #frame-container.large > iframe {
   padding: 15px;
-
+  
   width: 250%;
   height: 250%;
   transform: scale(0.4);

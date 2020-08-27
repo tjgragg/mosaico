@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-var console = require('console');
-var elaborateDeclarations = require('./declarations.js');
+var console = require("console");
+var elaborateDeclarations = require("./declarations.js");
 var utils = require('./utils.js');
 var modelDef = require('./model.js');
 
-var _getOptionsObject = function (options) {
+var _getOptionsObject = function(options) {
   var optionsCouples = options.split('|');
   var opts = {};
   for (var i = 0; i < optionsCouples.length; i++) {
@@ -19,13 +19,12 @@ var _getOptionsObject = function (options) {
 // Category "style" is used by editType "styler"
 // Cateogry "content" is used by editType "edit"
 // TODO maybe we should use a common string here, and rely only on the original category.
-var _filterProps = function (model, editType, level) {
+var _filterProps = function(model, editType, level) {
   var res = [];
   for (var prop in model)
     if (!prop.match(/^customStyle$/) && !prop.match(/^_/) && model.hasOwnProperty(prop)) {
       var isStyleProp = model[prop] !== null && typeof model[prop]._category != 'undefined' && model[prop]._category == 'style';
-      if (prop == 'id' || prop == 'type' || prop.match(/Blocks$/)) {
-      } else if (editType == 'styler') {
+      if (prop == 'id' || prop == 'type' || prop.match(/Blocks$/)) {} else if (editType == 'styler') {
         if (isStyleProp || level > 0) res.push(prop);
       } else if (editType == 'edit') {
         // Editing for properties in the "content" category but not defined in the context of a block
@@ -39,13 +38,13 @@ var _filterProps = function (model, editType, level) {
   return res;
 };
 
-var _propInput = function (model, prop, propAccessor, editType, widgets) {
-  var html = '';
+var _propInput = function(model, prop, propAccessor, editType, widgets) {
+  var html = "";
   var widget;
   if (model !== null && typeof model._widget != 'undefined') widget = model._widget;
 
   if (typeof widget == 'undefined') {
-    throw 'Unknown data type for ' + prop;
+    throw "Unknown data type for " + prop;
   }
 
   // For content editors we deal with focusing (clicking is handled by the container DIV).
@@ -61,8 +60,8 @@ var _propInput = function (model, prop, propAccessor, editType, widgets) {
     var parameters = {};
     if (typeof w.parameters !== 'undefined')
       for (var p in w.parameters)
-        if (w.parameters.hasOwnProperty(p) && typeof model['_' + p] !== 'undefined')
-          parameters[p] = model['_' + p];
+        if (w.parameters.hasOwnProperty(p) && typeof model['_'+p] !== 'undefined')
+          parameters[p] = model['_'+p];
     html += w.html(propAccessor, onfocusbinding, parameters);
   } else if (widget == 'boolean') {
     html += '<input type="checkbox" value="nothing" data-bind="checked: ' + propAccessor + ', ' + onfocusbinding + '" />';
@@ -130,7 +129,7 @@ var _propInput = function (model, prop, propAccessor, editType, widgets) {
   return html;
 };
 
-var _getGlobalStyleProp = function (globalStyles, model, prop, path) {
+var _getGlobalStyleProp = function(globalStyles, model, prop, path) {
   var globalStyleProp;
   if (typeof model !== 'object' || model === null || typeof model._widget !== 'undefined') {
     if (typeof prop !== 'undefined' && typeof path !== 'undefined' && path.length > 0 && typeof globalStyles == 'object' && typeof globalStyles[path] != 'undefined') {
@@ -140,17 +139,17 @@ var _getGlobalStyleProp = function (globalStyles, model, prop, path) {
   return globalStyleProp;
 };
 
-var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, model, themeModel, path, prop, editType, level, baseThreshold, globalStyles, globalStyleProp, trackUsage, rootPreviewBinding, previewBackground) {
+var _propEditor = function(withBindingProvider, widgets, templateUrlConverter, model, themeModel, path, prop, editType, level, baseThreshold, globalStyles, globalStyleProp, trackUsage, rootPreviewBinding, previewBackground) {
   if (typeof level == 'undefined') level = 0;
 
   if (typeof prop !== 'undefined' && typeof model == 'object' && model !== null && typeof model._usecount === 'undefined') {
-    if (typeof console.debug == 'function') console.debug('Ignoring', path, 'property because it is not used by the template', 'prop:', prop, 'type:', editType, 'level:', level, withBindingProvider._templateName);
-    return '';
+    if (typeof console.debug == 'function') console.debug("Ignoring", path, "property because it is not used by the template", "prop:", prop, "type:", editType, "level:", level, withBindingProvider._templateName);
+    return "";
   }
 
   var propAccessor = typeof globalStyleProp != 'undefined' ? prop + '._defaultComputed' : prop;
 
-  var html = '';
+  var html = "";
   var title;
   var ifSubsProp = propAccessor;
   var ifSubsGutter = 1;
@@ -184,10 +183,10 @@ var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, 
 
   if (typeof prop != 'undefined' && (model === null || typeof model._name == 'undefined')) {
     // TODO throw exception?
-    console.log('Missing label for property ', prop);
+    console.log("Missing label for property ", prop);
   }
   if (typeof prop == 'undefined' && model !== null && typeof model._name == 'undefined' && model.type !== 'theme') {
-    console.log('Missing label for object ', model.type /*, model */);
+    console.log("Missing label for object ", model.type /*, model */ );
   }
 
   if (typeof model == 'object' && model !== null && typeof model._widget == 'undefined') {
@@ -210,7 +209,7 @@ var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, 
       if (typeof themeModel !== 'undefined' && themeModel !== null && typeof themeModel._name !== 'undefined') {
         themeSectionName = themeModel._name;
       } else {
-        console.log('Missing label for theme section ', prop, model !== null ? model.type : '-');
+        console.log("Missing label for theme section ", prop, model !== null ? model.type : '-');
       }
 
       modelName = '<span class="blockSelectionMethod" data-bind="text: customStyle() ? $root.ut(\'template\', \'' + utils.addSlashes(modelName) + '\') : $root.ut(\'template\', \'' + utils.addSlashes(themeSectionName) + '\')">Block</span>';
@@ -263,7 +262,7 @@ var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, 
     var newGlobalStyleProp;
 
     for (i = 0; i < props.length; i++) {
-      newPath = path.length > 0 ? path + '.' + props[i] : props[i];
+      newPath = path.length > 0 ? path + "." + props[i] : props[i];
       if (typeof model[props[i]] != 'object' || model[props[i]] === null || typeof model[props[i]]._widget != 'undefined') {
         newGlobalStyleProp = undefined;
         if (level === 0 && props[i] == 'theme')
@@ -275,7 +274,7 @@ var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, 
       }
     }
     for (i = 0; i < props.length; i++) {
-      newPath = path.length > 0 ? path + '.' + props[i] : props[i];
+      newPath = path.length > 0 ? path + "." + props[i] : props[i];
       if (!(typeof model[props[i]] != 'object' || model[props[i]] === null || typeof model[props[i]]._widget != 'undefined')) {
         newGlobalStyleProp = undefined;
         if (level === 0 && props[i] == 'theme')
@@ -337,11 +336,12 @@ var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, 
       html += '</div>';
     } else if (model === null || typeof model != 'object') {
       // TODO remove debug output
-      html += '<div class="propEditor unknown">[A|' + prop + '|' + typeof model + ']</div>';
+      html += '<div class="propEditor unknown">[A|' + prop + "|" + typeof model + ']</div>';
     } else {
       // TODO remove debug output
-      html += '<div class="propEditor unknown">[B|' + prop + '|' + typeof model + ']</div>';
+      html += '<div class="propEditor unknown">[B|' + prop + "|" + typeof model + ']</div>';
     }
+
 
   }
 
@@ -355,7 +355,8 @@ var _propEditor = function (withBindingProvider, widgets, templateUrlConverter, 
   return html;
 };
 
-var createBlockEditor = function (defs, widgets, themeUpdater, templateUrlConverter, rootModelName, templateName, editType, templateCreator, baseThreshold, trackGlobalStyles, trackUsage, fromLevel) {
+
+var createBlockEditor = function(defs, widgets, themeUpdater, templateUrlConverter, rootModelName, templateName, editType, templateCreator, baseThreshold, trackGlobalStyles, trackUsage, fromLevel) {
   if (typeof trackUsage == 'undefined') trackUsage = true;
   var model = modelDef.getDef(defs, templateName);
 
@@ -368,6 +369,7 @@ var createBlockEditor = function (defs, widgets, themeUpdater, templateUrlConver
   var globalStyles = typeof trackGlobalStyles != 'undefined' && trackGlobalStyles ? defs[templateName]._globalStyles : undefined;
   var globalStyleProp = typeof trackGlobalStyles != 'undefined' && trackGlobalStyles ? defs[templateName]._globalStyle : undefined;
 
+
   var themeModel;
   if (typeof globalStyleProp !== 'undefined') {
     var mm = modelDef.getDef(defs, 'theme');
@@ -375,13 +377,14 @@ var createBlockEditor = function (defs, widgets, themeUpdater, templateUrlConver
     themeModel = mm[globalStyleProp.replace(/^(\$theme|_theme_)\./, '')];
   }
 
+
   var withBindingProvider = modelDef.getBindValue.bind(undefined, defs, themeUpdater, rootModelName, templateName);
   withBindingProvider._templateName = templateName;
 
   var html = '<div class="editor">';
-  html += '<div class="blockType' + (typeof globalStyles != 'undefined' ? ' withdefaults' : '') + '">' + model.type + '</div>';
+  html += "<div class=\"blockType" + (typeof globalStyles != 'undefined' ? " withdefaults" : "") + "\">" + model.type + "</div>";
 
-  var editorContent = _propEditor(withBindingProvider, widgets, templateUrlConverter, model, themeModel, '', undefined, editType, fromLevel, baseThreshold, globalStyles, globalStyleProp, trackUsage, rootPreviewBindings);
+  var editorContent = _propEditor(withBindingProvider, widgets, templateUrlConverter, model, themeModel, "", undefined, editType, fromLevel, baseThreshold, globalStyles, globalStyleProp, trackUsage, rootPreviewBindings);
   if (editorContent.length > 0) {
     html += editorContent;
   }
@@ -391,12 +394,12 @@ var createBlockEditor = function (defs, widgets, themeUpdater, templateUrlConver
   templateCreator(html, templateName, editType);
 };
 
-var createBlockEditors = function (defs, widgets, themeUpdater, templateUrlConverter, rootModelName, templateName, templateCreator, baseThreshold) {
+var createBlockEditors = function(defs, widgets, themeUpdater, templateUrlConverter, rootModelName, templateName, templateCreator, baseThreshold) {
   createBlockEditor(defs, widgets, themeUpdater, templateUrlConverter, rootModelName, templateName, 'edit', templateCreator, baseThreshold);
   createBlockEditor(defs, widgets, themeUpdater, templateUrlConverter, rootModelName, templateName, 'styler', templateCreator, baseThreshold, true);
 };
 
-var generateEditors = function (templateDef, widgets, templateUrlConverter, templateCreator, baseThreshold) {
+var generateEditors = function(templateDef, widgets, templateUrlConverter, templateCreator, baseThreshold) {
   var defs = templateDef._defs;
   var templateName = templateDef.templateName;
   var blocks = templateDef._blocks;

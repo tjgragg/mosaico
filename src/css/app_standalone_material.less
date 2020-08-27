@@ -10,7 +10,7 @@
 @standard-border-radius: 2px;
 @info-border-radius: @standard-border-radius;
 @button-border-radius: @standard-border-radius;
-@large-balloon-border-radius: 2px;
+@large-balloon-border-radius: 2px; 
 
 @object-background-color: #DDDDDD;
 // @mosaico-object-shadow: 1px 1px 2px lighten(@shadow-color, 30%);
@@ -54,21 +54,18 @@
     line-height: 22px;
 
     background-color: @mosaico-ui-background-color;
-
     &:hover, &.pressed {
       background-color: lighten(@mosaico-ui-background-color, 10%);
     }
-
     &.selected, &.ui-state-active {
       border-bottom: 2px solid @button-text-color;
       border-top: 0;
     }
-
     &.ui-button-disabled, &.ui-button-disabled .ui-icon, &.ui-button-disabled .ui-button-text {
       color: mix(@mosaico-ui-background-color, @button-text-color);
     }
   }
-}
+} 
 
 #main-toolbox #tooltabs.ui-tabs > .ui-tabs-nav {
   box-shadow: 0 0 10px @shadow-color;
@@ -81,7 +78,6 @@
 #main-toolbox #tooltabs.ui-tabs {
   .ui-tabs-nav {
     font-size: 1em;
-
     li {
       margin: 1px 1px 0 0;
       line-height: @topbar-height - 4px;
@@ -102,20 +98,19 @@
     background-color: transparent;
   }
   li > a when (@buttonstyle) {
-    background-color: transparent;
-
+    background-color: transparent; 
     &:hover {
       background-color: lighten(@mosaico-ui-background-color, 10%);
       border-bottom: 3px solid lighten(@mosaico-ui-background-color, 10%);
-    }
+    } 
   }
 
   li@{activeclass} a {
-    & when (@buttonstyle) {
+    & when(@buttonstyle) {
       background-color: transparent;
       color: @button-text-color;
       border-bottom: 3px solid @button-text-color;
-    }
+    } 
   }
 }
 
@@ -135,13 +130,11 @@
       color: @button-text-color;
       // margin: 0 -2px;
     }
-
     & + .checkbox-replacer:after {
       padding-left: 15px;
       margin-left: -15px;
       border-color: transparent;
     }
-
     &:checked + .checkbox-replacer:before {
       padding-right: 15px;
       margin-right: -15px;
@@ -155,14 +148,12 @@
       margin-left: 20px;
       background-color: @button-background-color;
     }
-
     & + .checkbox-replacer:after,
     & + .checkbox-replacer:before {
       content: " ";
       display: block;
       transition: margin-left .2s, background-color .2s;
     }
-
     & + .checkbox-replacer:before {
       width: 20px;
       height: 20px;
@@ -171,11 +162,9 @@
       font-size: 120%;
       box-shadow: 1px 1px 3px @shadow-color;
     }
-
     &:checked + .checkbox-replacer:after {
       background-color: lighten(@button-background-color, 20%);
     }
-
     & + .checkbox-replacer:after {
       width: 34px;
       height: 14px;
@@ -186,8 +175,7 @@
   }
 
 }
-
-.mo .objEdit input[type=checkbox] + .checkbox-replacer:before {
+.mo .objEdit input[type=checkbox]+.checkbox-replacer:before {
   color: @button-background-color;
 }
 
@@ -195,22 +183,18 @@
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-
 .mo .propInput .data-select:after {
   background-color: transparent;
   color: lighten(@text-color, 30%);
 }
-
 .mo .propInput .evo-pointer:before {
   background-color: white;
   color: lighten(@text-color, 30%);
 }
-
 .mo .propInput .data-integer .ui-spinner-button .ui-button-text {
   background-color: transparent;
   color: lighten(@text-color, 30%);
 }
-
 .mo .propInput .data-select:hover:after,
 .mo .propInput .evo-pointer:hover:before,
 .mo .ui-button.ui-spinner-button.ui-state-hover,
@@ -228,7 +212,7 @@
   background-color: transparent;
   // color: lighten(@text-color, 30%); 
   .ui-button-text .ui-icon {
-    color: lighten(@text-color, 30%);
+    color: lighten(@text-color, 30%); 
   }
 }
 
@@ -276,12 +260,10 @@
     }
   }
 }
-
 #main-toolbox {
   .noSelectedBlock, .customStyleHelp, .objEmpty, .galleryEmpty {
     font-size: 1em;
   }
-
   .noSelectedBlock, .customStyleHelp, .objEmpty {
     margin-left: -15px;
     padding-left: 25px;
@@ -291,19 +273,19 @@
 }
 
 
-& when (true) {
+
+& when(true) {
   .mo .objEdit.level1 {
-    background-color: white;
-    box-shadow: 1px 1px 3px #888;
-    border-top: 0;
-    padding: 6px;
-    padding-top: .5em;
+      background-color: white;
+      box-shadow: 1px 1px 3px #888;
+      border-top: 0;
+      padding: 6px;
+      padding-top: .5em;
   }
 
   .mo #toolstyles, .mo #tooltheme {
     .objEdit.level1 {
       border-top-left-radius: 30px;
-
       .objLabel.level1 {
         padding-bottom: 0;
         padding-top: 1em;
@@ -312,25 +294,24 @@
   }
 
   .mo .objPreview {
-    border-width: 0;
-    box-shadow: inset 1px 1px 4px rgba(0, 0, 0, .3);
-    top: 4px;
-    left: 4px;
+      border-width: 0;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,.3);
+      top: 4px;
+      left: 4px;
   }
 
   .mo #toolstyles .objLabel.level1, .mo #tooltheme .objLabel.level1 {
     padding-left: 60px;
   }
 
-  .mo .propInput input[type=text],
-  .mo .propInput input[type=number],
+  .mo .propInput input[type=text], 
+  .mo .propInput input[type=number], 
   .mo .propInput input[type=url],
   .mo .propInput select,
   .mo .propInput .data-select select,
   .mo .propInput .ui-spinner .ui-spinner-input {
     border-width: 0 0 2px 0;
     background-color: transparent;
-
     &:hover, &:focus {
       border-color: @link-color;
     }
@@ -338,7 +319,6 @@
 
   .mo .propInput .data-color input[type=text] {
     margin-left: 35px;
-
     &:hover, &:focus {
       margin-left: 35px;
     }
@@ -349,7 +329,6 @@
     width: 30px;
     border: 0;
     box-shadow: 1px 1px 3px @shadow-color;
-
     &:before {
       content: none;
       display: none;
@@ -369,7 +348,7 @@
       right: 0;
       height: 43px;
       bottom: 0;
-    }
+    }    
 
     th.ui-widget-content {
       text-align: center;
@@ -379,7 +358,6 @@
     .evo-more {
       text-align: right;
       padding: 7px 5px;
-
       a {
         color: @link-color;
         text-transform: uppercase;
@@ -406,7 +384,7 @@
   .ui-icon {
     color: @button-text-color;
   }
-}
+} 
 
 // slider
 

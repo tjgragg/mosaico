@@ -90,27 +90,15 @@
 }
 
 @keyframes border-color-selection-pulsate {
-  0% {
-    border-color: @mosaico-outline-color;
-  }
-  40% {
-    border-color: @mosaico-selection-color;
-  }
-  60% {
-    border-color: @mosaico-selection-color;
-  }
-  100% {
-    border-color: @mosaico-outline-color;
-  }
+    0% { border-color: @mosaico-outline-color; }
+   40% { border-color: @mosaico-selection-color; }
+   60% { border-color: @mosaico-selection-color; }
+  100% { border-color: @mosaico-outline-color; }
 }
 
 @keyframes droppable-pulsate {
-  0% {
-    opacity: 1
-  }
-  100% {
-    opacity: .1
-  }
+  0% { opacity: 1 }
+  100% { opacity: .1 }
 }
 
 .makeDroppable() {
@@ -146,8 +134,7 @@
     display: block;
     position: absolute;
     // z-index: 0;
-    top: -3px;
-    bottom: -3px;
+    top: -3px; bottom: -3px;
     left: -2px - @size;
     right: -2px - @size;
 
@@ -195,10 +182,8 @@
     display: block;
     position: absolute;
     // z-index: 0;
-    top: -3px;
-    bottom: -3px;
-    left: -7px;
-    right: -7px;
+    top: -3px; bottom: -3px;
+    left: -7px; right: -7px;
     border: 1px dashed transparent;
     opacity: 0.3;
 
@@ -231,20 +216,18 @@ body {
   margin: 0;
   overflow: hidden; /* otherwsie TinyMCE menues sometimes makes scrollbars show in main body */
 }
-
 input, select, textarea, button { // input don't inherit font properties from body by default.
   font-family: inherit;
-  font-size: inherit;
+  font-size: inherit; 
   max-width: 100%;
 }
 
 * {
   user-select: none;
 }
-
 input,
-textarea,
-[contenteditable],
+textarea, 
+[contenteditable], 
 [contenteditable] *, // makes IE contenteditable content selectable again
 .evo-color span // allow selecting for hex colors in colorpicker
 {
@@ -306,11 +289,9 @@ a[disabledhref]:-moz-read-write {
   width: @leftsidebar-width;
   box-shadow: 0 0 10px @mosaico-shadow-color, 0 0 5px @mosaico-shadow-color;
 }
-
 .withToolbox #main-toolbox {
   display: block;
 }
-
 .withToolbox #main-edit-area,
 .withToolbox #toolbar {
   left: @leftsidebar-width;
@@ -324,11 +305,9 @@ a[disabledhref]:-moz-read-write {
   //padding: 10px;
   overflow: hidden;
 }
-
 .withPreviewFrame #main-preview {
   display: block;
 }
-
 .withPreviewFrame #main-edit-area {
   right: (@rightsidebar-width + 5px);
 }
@@ -348,21 +327,17 @@ a[disabledhref]:-moz-read-write {
   top: 0;
   z-index: 100;
 }
-
 #main-edit-area:after {
   top: auto;
   bottom: -@topbar-height;
 }
-
 #frame-container:before {
   top: -@topbar-height;
 }
-
 #frame-container:after {
   top: auto;
   bottom: -@topbar-height;
 }
-
 #main-wysiwyg-area {
   position: absolute;
   top: @topbar-height;
@@ -371,7 +346,7 @@ a[disabledhref]:-moz-read-write {
   bottom: 0;
   overflow-y: auto;
   // http://blog.getpostman.com/2015/01/23/ui-repaint-issue-on-chrome/
-  -webkit-transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0,0,0);
   // overflow-x: hidden;
 }
 
@@ -394,17 +369,14 @@ a[disabledhref]:-moz-read-write {
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
-
     img {
       opacity: 0;
     }
   }
 }
-
 .ui-draggable-dragging {
   z-index: 10000;
 }
-
 .ui-draggable-dragging.sortable-placeholder {
   top: 0 !important;
   left: 0 !important;
@@ -422,22 +394,18 @@ a[disabledhref]:-moz-read-write {
   bottom: 0px !important;
   color: #000000;
 }
-
 .uploadzone .fileuploadtext {
   .resetFont();
   font-weight: bold;
 }
-
 .isdragging, .isdraggingimg {
   .uploadzone .fileuploadtext {
     display: none !important;
   }
 }
-
 .uploadzone .progress {
   display: none;
 }
-
 .uploadzone.uploading .progress {
   display: block;
 }
@@ -467,7 +435,7 @@ a[disabledhref]:-moz-read-write {
 
 body > .ui-tooltip {
   .win();
-
+  
   .resetFont();
   // font-family: @font-family;
   // font-size: 1em;
@@ -500,15 +468,9 @@ i.mce-i-newsletter-profile:before {
 
 .mo-standalone {
   @keyframes loading {
-    0% {
-      transform: scale(1, 1) rotate(0deg);
-    }
-    50% {
-      transform: scale(1.5, 1.5) rotate(360deg);
-    }
-    100% {
-      transform: scale(1, 1) rotate(720deg);
-    }
+      0% { transform: scale(1, 1) rotate(0deg); }
+     50% { transform: scale(1.5, 1.5) rotate(360deg); }
+    100% { transform: scale(1, 1) rotate(720deg); }
   }
 
   #loading.loading img {
@@ -517,17 +479,10 @@ i.mce-i-newsletter-profile:before {
 }
 
 @keyframes broken {
-  0% {
-    opacity: 0
-  }
-  95% {
-    opacity: 0
-  }
-  100% {
-    opacity: 1
-  }
+    0% { opacity: 0 }
+   95% { opacity: 0 }
+  100% { opacity: 1 }
 }
-
 #loading.loading div {
   animation: broken 10s linear forwards;
   padding: 1em;
@@ -536,90 +491,62 @@ i.mce-i-newsletter-profile:before {
 
 #carousel-dialog {
   .carousel-buttons {
-    position: absolute;
-    right: 5px;
-    bottom: 10px;
+    position: absolute; right: 5px; bottom: 10px;
   }
-
   .carousel-buttons .button {
     font-size: 1.2em;
   }
-
   .carousel-remember {
     font-size: 1.2em;
-    position: absolute;
-    left: 10px;
-    bottom: 17px;
+    position: absolute; left: 10px; bottom: 17px;
   }
-
   .carousel-remember input {
-    vertical-align: middle;
-    margin-right: .2em;
+    vertical-align: middle; margin-right: .2em;
   }
-
   .owl-carousel {
     height: 550px;
   }
-
   .owl-controls {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 7px;
+    position: absolute; left: 0; right: 0; bottom: 7px;
   }
-
   .owl-controls .owl-page.active span {
     background-color: @button-background-color;
   }
-
   .owl-controls .owl-page span {
     background-color: @accent-color;
     /*opacity: 1;*/
   }
-
   .carousel-help {
     margin-top: 5px;
     font-size: 1.2em;
   }
-
   .carousel-help-text {
     line-height: 1.5em;
   }
-
   .carousel-help-text.large-width {
     width: 80%;
     margin: 0 auto;
   }
-
   .carousel-help-text p {
     padding: .5em;
   }
-
   .carousel-help-image {
   }
-
   .carousel-help .left {
     margin-right: 20px;
   }
-
   .carousel-help .top {
     margin-bottom: 10px;
   }
-
   .carousel-help-balloon {
-    display: flex;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    align-items: center;
-    -webkit-align-items: center;
+    display: flex; display: -webkit-flex; display: -ms-flexbox;
+    align-items: center; -webkit-align-items: center;
     /*-ms-flex-align: center; -webkit-box-align: center;*/
     justify-content: center;
     text-align: center;
     overflow: auto;
     padding: 0 .5em;
     // fix per IE10
-    > div {
-      width: 100%
-    }
+    > div { width: 100% }
   }
 }

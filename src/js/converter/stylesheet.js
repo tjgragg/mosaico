@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
 // Parses CSS/stylesheets declarations -ko-blockdefs/-ko-themes
 // It returns KO bindings but doesn't depend on KO
 // Needs a bindingProvider
 // Also uses a blockDefsUpdater to update definitions while parsing the stylesheet.
 
-var cssParse = require('mensch/lib/parser.js');
-var console = require('console');
-var converterUtils = require('./utils.js');
-var elaborateDeclarations = require('./declarations.js');
+var cssParse = require("mensch/lib/parser.js");
+var console = require("console");
+var converterUtils = require("./utils.js");
+var elaborateDeclarations = require("./declarations.js");
 
 /* Temporary experimental code not used
 var _processStyleSheetRules_processThemes = function (bindingProvider, themeUpdater, rules) {
@@ -32,16 +32,16 @@ var _processStyleSheetRules_processThemes = function (bindingProvider, themeUpda
 };
 */
 
-var _removeOptionalQuotes = function (str) {
-  if ((str[0] == '\'' || str[0] == '"') && str[str.length - 1] == str[0]) {
+var _removeOptionalQuotes = function(str) {
+  if ((str[0] == "'" || str[0] == '"') && str[str.length-1] == str[0]) {
     // unescapeing
-    var res = str.substr(1, str.length - 2).replace(/\\([\s\S])/gm, '$1');
+    var res = str.substr(1, str.length-2).replace(/\\([\s\S])/gm, '$1');
     return res;
   }
   return str;
 };
 
-var _processStyleSheetRules_processBlockDef = function (blockDefsUpdater, rules) {
+var _processStyleSheetRules_processBlockDef = function(blockDefsUpdater, rules) {
   var properties, namedProps, decls;
   // name, contextName, globalStyle, themeOverride, extend, min, max, widget, options, category, variant, help, blockDescription, version, 
   for (var i = 0; i < rules.length; i++) {
@@ -57,12 +57,12 @@ var _processStyleSheetRules_processBlockDef = function (blockDefsUpdater, rules)
         }
       }
       if (hasPreviews && hasDeclarations) {
-        console.log('cannot mix selectors type (:preview and declarations) in @supports -ko-blockdefs ', sels);
-        throw 'Cannot mix selectors type (:preview and declarations) in @supports -ko-blockdefs';
+        console.log("cannot mix selectors type (:preview and declarations) in @supports -ko-blockdefs ", sels);
+        throw "Cannot mix selectors type (:preview and declarations) in @supports -ko-blockdefs";
       }
       if (!hasPreviews && !hasDeclarations) {
-        console.log('cannot find known selectors in @supports -ko-blockdefs ', sels);
-        throw 'Cannot find known selectors in @supports -ko-blockdefs';
+        console.log("cannot find known selectors in @supports -ko-blockdefs ", sels);
+        throw "Cannot find known selectors in @supports -ko-blockdefs";
       }
       if (hasDeclarations) {
         properties = '';
@@ -90,7 +90,7 @@ var _processStyleSheetRules_processBlockDef = function (blockDefsUpdater, rules)
         for (var m = 0; m < sels.length; m++) {
           var localBlockName = sels[m].substr(0, sels[m].indexOf(':'));
           var previewBindings = rules[i].declarations;
-          blockDefsUpdater(localBlockName, undefined, {previewBindings: previewBindings});
+          blockDefsUpdater(localBlockName, undefined, { previewBindings: previewBindings });
         }
       }
 
@@ -100,18 +100,18 @@ var _processStyleSheetRules_processBlockDef = function (blockDefsUpdater, rules)
   }
 };
 
-var processStylesheetRules = function (style, rules, localWithBindingProvider, blockDefsUpdater, themeUpdater, templateUrlConverter, rootModelName, templateName) {
+var processStylesheetRules = function(style, rules, localWithBindingProvider, blockDefsUpdater, themeUpdater, templateUrlConverter, rootModelName, templateName) {
   var newStyle = style;
   var lastStart = null;
 
   if (typeof rules == 'undefined') {
     var styleSheet = cssParse(style, {
       comments: true,
-      position: true,
+      position: true
     });
     if (styleSheet.type != 'stylesheet' || typeof styleSheet.stylesheet == 'undefined') {
-      console.log('unable to process styleSheet', styleSheet);
-      throw 'Unable to parse stylesheet';
+      console.log("unable to process styleSheet", styleSheet);
+      throw "Unable to parse stylesheet";
     }
     rules = styleSheet.stylesheet.rules;
   }
@@ -138,13 +138,13 @@ var processStylesheetRules = function (style, rules, localWithBindingProvider, b
       // ignore comments
     } else if (rules[i].type == 'rule') {
       var sels = rules[i].selectors;
-      var newSel = '';
+      var newSel = "";
       var foundBlockMatch = null;
       for (var j = 0; j < sels.length; j++) {
-        if (newSel.length > 0) newSel += ', ';
+        if (newSel.length > 0) newSel += ", ";
         var match = sels[j].match(/\[data-ko-block=([^ ]*)\]/);
         if (match !== null) {
-          if (foundBlockMatch !== null && foundBlockMatch != match[1]) throw 'Found multiple block-match attribute selectors: cannot translate it (' + foundBlockMatch + ' vs ' + match[1] + ')';
+          if (foundBlockMatch !== null && foundBlockMatch != match[1]) throw "Found multiple block-match attribute selectors: cannot translate it (" + foundBlockMatch + " vs " + match[1] + ")";
           foundBlockMatch = match[1];
         }
         newSel += '<!-- ko text: templateMode ==\'wysiwyg\' ? \'#main-wysiwyg-area \' : \'\' --><!-- /ko -->' + sels[j];
@@ -153,10 +153,10 @@ var processStylesheetRules = function (style, rules, localWithBindingProvider, b
         var loopPrefix = '<!-- ko foreach: $root.findObjectsOfType($data, \'' + foundBlockMatch + '\') -->';
         var loopPostfix = '<!-- /ko -->';
         var end = lastStart;
-        var spacing = ' ';
+        var spacing = " ";
         if (rules[i].declarations.length > 0) {
           if (rules[i].declarations[0].position.start.line != rules[i].position.end.line) {
-            spacing = '\n' + (new Array(rules[i].position.start.col)).join(' ');
+            spacing = "\n" + (new Array(rules[i].position.start.col)).join(" ");
           }
           end = rules[i].declarations[rules[i].declarations.length - 1].position.end;
         }
@@ -165,7 +165,7 @@ var processStylesheetRules = function (style, rules, localWithBindingProvider, b
         else newStyle = converterUtils.removeStyle(newStyle, end, lastStart, 0, 0, 0, spacing + '}' + spacing + loopPostfix);
         newSel = loopPrefix + spacing + newSel.replace(new RegExp('\\[data-ko-block=' + foundBlockMatch + '\\]', 'g'), '<!-- ko text: \'#\'+id() -->' + foundBlockMatch + '<!-- /ko -->');
 
-        blockDefsUpdater(foundBlockMatch, '', {contextName: 'block'});
+        blockDefsUpdater(foundBlockMatch, '', { contextName: 'block' });
       }
       // TODO mensch update (using original mensch library we needed this line, while the patched one doesn't need this code)
       // newSel += " {";
@@ -176,7 +176,7 @@ var processStylesheetRules = function (style, rules, localWithBindingProvider, b
 
       newStyle = converterUtils.removeStyle(newStyle, rules[i].position.start, rules[i].position.end, 0, 0, 0, newSel);
     } else {
-      console.log('Unknown rule type', rules[i].type, 'while parsing <style> rules');
+      console.log("Unknown rule type", rules[i].type, "while parsing <style> rules");
     }
     lastStart = rules[i].position.start;
   }

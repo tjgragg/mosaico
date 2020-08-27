@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
-var objExtend = require('./domutils.js').objExtend;
-var console = require('console');
+var objExtend = require("./domutils.js").objExtend;
+var console = require("console");
 
-var _valueSet = function (defs, model, prop, value) {
+var _valueSet = function(defs, model, prop, value) {
   var dotPos = prop.indexOf('.');
   if (dotPos == -1) {
     if (typeof model[prop] == 'undefined') {
-      console.log('Undefined prop ' + prop + ' while setting value ' + value + ' in model._valueSet');
+      console.log("Undefined prop " + prop + " while setting value " + value + " in model._valueSet");
     } else if (model[prop] === null) {
-      if (typeof value == 'object' && value !== null && typeof value.push == 'undefined') console.log('nullpropobjectvalue', prop, value);
+      if (typeof value == 'object' && value !== null && typeof value.push == 'undefined') console.log("nullpropobjectvalue", prop, value);
       model[prop] = value;
     } else if (typeof model[prop] == 'object' && typeof model[prop].push == 'function') {
       var values;
@@ -18,12 +18,12 @@ var _valueSet = function (defs, model, prop, value) {
         if (valuesString !== null) {
           values = valuesString[1].split(',');
         } else {
-          throw 'Unexpected default value for array property ' + prop + ': ' + value;
+          throw "Unexpected default value for array property " + prop + ": " + value;
         }
       } else if (typeof value === 'object' && typeof value.push !== 'undefined') {
         values = value;
       } else {
-        throw 'Unexpected default value for array property ' + prop + ': ' + value + ' typeof ' + (typeof value);
+        throw "Unexpected default value for array property " + prop + ": " + value + " typeof " + (typeof value);
       }
       var res = [];
       for (var i = 0; i < values.length; i++) {
@@ -39,11 +39,11 @@ var _valueSet = function (defs, model, prop, value) {
       // TODO does this still happen? Debug/test me.
       model[prop] = value;
     } else if (typeof model[prop] == 'object' && model[prop] !== null && typeof model[prop]._widget != 'undefined') {
-      if (typeof value == 'object' && value !== null) console.log('objectvalue', prop, model[prop]._widget, value);
+      if (typeof value == 'object' && value !== null) console.log("objectvalue", prop, model[prop]._widget, value);
       // _data is defined for primitive types
       model[prop] = value;
     } else {
-      console.log('setting', typeof model[prop], model[prop], prop, value);
+      console.log("setting", typeof model[prop], model[prop], prop, value);
     }
   } else {
     var propName = prop.substr(0, dotPos);
@@ -51,15 +51,15 @@ var _valueSet = function (defs, model, prop, value) {
   }
 };
 
-var _modelCreateOrUpdateBlockDef = function (defs, templateName, properties, namedProperties) {
+var _modelCreateOrUpdateBlockDef = function(defs, templateName, properties, namedProperties) {
   if (typeof defs[templateName] !== 'undefined' && defs[templateName]._initialized && !defs[templateName]._writeable) {
-    console.error('Trying to alter non writeable model', defs, templateName, properties, namedProperties);
-    throw 'Trying to alter non writeable model: ' + templateName + ' / ' + properties;
+    console.error("Trying to alter non writeable model", defs, templateName, properties, namedProperties);
+    throw "Trying to alter non writeable model: " + templateName + " / " + properties;
   }
 
   if (typeof defs[templateName] == 'undefined') {
     defs[templateName] = {
-      _writeable: true,
+      _writeable: true
     };
     // Fallback computation of "category" depending on the property name
     // TODO remove me: this should be always defined in the template definition, no need to hardcode this stuff.
@@ -72,6 +72,7 @@ var _modelCreateOrUpdateBlockDef = function (defs, templateName, properties, nam
       }
     }
   }
+
 
   if (typeof namedProperties !== 'undefined') {
     // TODO check if this is needed before the ending namedProperty "loop" or not.
@@ -89,7 +90,7 @@ var _modelCreateOrUpdateBlockDef = function (defs, templateName, properties, nam
       _modelCreateOrUpdateBlockDef(defs, 'theme', gs);
 
       if (typeof defs[templateName]._themeOverride === 'undefined' || !!defs[templateName]._themeOverride) {
-        _modelCreateOrUpdateBlockDef(defs, templateName, 'customStyle=false');
+        _modelCreateOrUpdateBlockDef(defs, templateName, "customStyle=false");
       }
     }
     if (typeof namedProperties.contextName !== 'undefined') {
@@ -102,30 +103,30 @@ var _modelCreateOrUpdateBlockDef = function (defs, templateName, properties, nam
         _modelCreateOrUpdateBlockDef(defs, 'theme', 'bodyTheme');
 
         if (typeof defs[templateName]._themeOverride == 'undefined' || defs[templateName]._themeOverride) {
-          _modelCreateOrUpdateBlockDef(defs, templateName, 'customStyle=false');
+          _modelCreateOrUpdateBlockDef(defs, templateName, "customStyle=false");
         }
       }
     }
     if (typeof namedProperties.extend != 'undefined') defs[templateName].type = namedProperties.extend;
   }
 
-  for (var np in namedProperties) if (namedProperties.hasOwnProperty(np) && typeof namedProperties[np] !== 'undefined' && ['name', 'extend', 'contextName', 'globalStyle', 'themeOverride'].indexOf(np) == -1) {
-    defs[templateName]['_' + np] = namedProperties[np];
+  for (var np in namedProperties) if (namedProperties.hasOwnProperty(np) && typeof namedProperties[np] !== 'undefined' && ['name', 'extend', 'contextName', 'globalStyle','themeOverride'].indexOf(np) == -1) {
+    defs[templateName]['_'+np] = namedProperties[np];
   }
 
   if (typeof properties != 'undefined' && properties.length > 0) {
-    defs[templateName]._props = typeof defs[templateName]._props != 'undefined' && defs[templateName]._props.length > 0 ? defs[templateName]._props + ' ' + properties : properties;
+    defs[templateName]._props = typeof defs[templateName]._props != 'undefined' && defs[templateName]._props.length > 0 ? defs[templateName]._props + " " + properties : properties;
   }
 };
 
 // remove the first "sequence" in a camelcased word (e.g: myCamelCase => camelCase).
-var _removePrefix = function (str) {
+var _removePrefix = function(str) {
   var res = str.match(/^[^A-Z]+([A-Z])(.*)$/);
   return res !== null ? res[1].toLowerCase() + res[2] : null;
 };
 
 // TODO defs is needed only because _valueSet needs it.. we should remove it downstream.
-var _generateModelFromDef = function (modelDef, defs) {
+var _generateModelFromDef = function(modelDef, defs) {
   var res = {};
 
   for (var prop in modelDef)
@@ -140,8 +141,8 @@ var _generateModelFromDef = function (modelDef, defs) {
         res[prop] = null;
         // for customStyle this is set to null.
       } else {
-        console.error('Unexpected model def', prop, value, modelDef);
-        throw 'Unexpected model def [' + prop + '] = ' + value;
+        console.error("Unexpected model def", prop, value, modelDef);
+        throw "Unexpected model def [" + prop + "] = " + value;
       }
     }
 
@@ -156,16 +157,16 @@ var _generateModelFromDef = function (modelDef, defs) {
   return res;
 };
 
-var _generateModel = function (defs, name) {
+var _generateModel = function(defs, name) {
   var modelDef = _getModelDef(defs, name, false, true);
   return _generateModelFromDef(modelDef, defs);
 };
 
-var _getDef = function (defs, name) {
+var _getDef = function(defs, name) {
   return _getModelDef(defs, name, false, true);
 };
 
-var _getModelDef = function (defs, name, returnClone, readonly) {
+var _getModelDef = function(defs, name, returnClone, readonly) {
   // lookup "name" in the template definition
   if (typeof defs[name] == 'undefined') {
     // if the name has a space then returns.
@@ -181,7 +182,7 @@ var _getModelDef = function (defs, name, returnClone, readonly) {
   } else {
     // when the name is already defined...
     var defObj = defs[name];
-    if (typeof defObj != 'object') throw 'Block definition must be an object: found ' + defObj + ' for ' + name;
+    if (typeof defObj != 'object') throw "Block definition must be an object: found " + defObj + " for " + name;
 
     if (typeof defObj._initialized == 'undefined') {
       // Populate "type" depending on name
@@ -206,11 +207,11 @@ var _getModelDef = function (defs, name, returnClone, readonly) {
 
     if (typeof defObj._props != 'undefined') {
       var def = defObj._props;
-      def = def.split(' ');
+      def = def.split(" ");
 
       if (def.length > 0 && typeof defObj._writeable == 'undefined') {
-        console.error('Altering a non writable object ', name, def, defObj);
-        throw 'Altering a non writable object: ' + name + ' def: ' + def;
+        console.error("Altering a non writable object ", name, def, defObj);
+        throw "Altering a non writable object: " + name + " def: " + def;
       }
 
       if (typeof defObj._processedDefs == 'undefined') {
@@ -275,36 +276,36 @@ var _getModelDef = function (defs, name, returnClone, readonly) {
       defObj._writeable = false;
       return defObj;
     } else {
-      if (typeof defObj._writeable == 'undefined' || defObj._writeable === false) throw 'Retrieving non writeable object definition: ' + name;
+      if (typeof defObj._writeable == 'undefined' || defObj._writeable === false) throw "Retrieving non writeable object definition: " + name;
       return defObj;
     }
   }
 };
 
-var _increaseUseCount = function (readonly, model) {
+var _increaseUseCount = function(readonly, model) {
   if (!readonly) {
     if (typeof model._usecount == 'undefined') model._usecount = 0;
     model._usecount++;
   } else if (typeof model._usecount == 'undefined') {
-    console.error('ERROR trying to bind an unused property while readonly', model);
-    throw 'ERROR trying to bind an unused property';
+    console.error("ERROR trying to bind an unused property while readonly", model);
+    throw "ERROR trying to bind an unused property";
   }
 };
 
-var ensureGlobalStyle = function (defs, readonly, gsBindingProvider, modelName, path, gsFullPath, defaultValue, overrideDefault) {
+var ensureGlobalStyle = function(defs, readonly, gsBindingProvider, modelName, path, gsFullPath, defaultValue, overrideDefault) {
 
   var globalStyleBindingBindValue = gsBindingProvider(gsFullPath, defaultValue, overrideDefault);
 
   if (typeof defs[modelName]._globalStyles[path] == 'undefined') {
-    if (readonly) throw 'Cannot find _globalStyle for ' + path + ' in ' + modelName + '!';
+    if (readonly) throw "Cannot find _globalStyle for " + path + " in " + modelName + "!";
     if (path.indexOf('.') != -1 || (typeof defs[modelName][path] == 'object' && typeof defs[modelName][path]._widget !== 'undefined')) {
       defs[modelName]._globalStyles[path] = globalStyleBindingBindValue;
     }
-  } else if (defs[modelName]._globalStyles[path] != globalStyleBindingBindValue) throw 'Unexpected conflicting globalStyle [2] for ' + modelName + '/' + path + ': old=' + defs[modelName]._globalStyles[path] + ' new=' + globalStyleBindingBindValue;
+  } else if (defs[modelName]._globalStyles[path] != globalStyleBindingBindValue) throw "Unexpected conflicting globalStyle [2] for " + modelName + "/" + path + ": old=" + defs[modelName]._globalStyles[path] + " new=" + globalStyleBindingBindValue;
 };
 
 // themeUpdater, defaultValue, overrideDefault, setcategory are only used in !readonly mode
-var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, rootModelName, templateName, within, fullPath, defaultValue, overrideDefault, setcategory) {
+var modelEnsurePathAndGetBindValue = function(readonly, defs, themeUpdater, rootModelName, templateName, within, fullPath, defaultValue, overrideDefault, setcategory) {
   var modelName;
   var res;
   var path;
@@ -312,27 +313,27 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
     var p3 = fullPath.indexOf('.', 8);
     modelName = fullPath.substr(8, p3 - 8);
     path = fullPath.substr(p3 + 1);
-    res = '$root.content().theme().' + modelName + '().' + path.replace(new RegExp('\\.', 'g'), '().');
+    res = "$root.content().theme()." + modelName + "()." + path.replace(new RegExp('\\.', 'g'), '().');
   } else if (fullPath.substr(0, 7) == '_root_.') {
     modelName = rootModelName;
     path = fullPath.substr(7);
-    res = '$root.content().' + path.replace(new RegExp('\\.', 'g'), '().');
+    res = "$root.content()." + path.replace(new RegExp('\\.', 'g'), '().');
   } else {
     modelName = templateName;
     path = within + fullPath;
     res = fullPath.replace(new RegExp('\\.', 'g'), '().');
   }
 
-  if (typeof defs[modelName] === 'undefined') throw 'Cannot find model def for [' + modelName + ']';
+  if (typeof defs[modelName] === 'undefined') throw "Cannot find model def for [" + modelName + "]";
 
   var propPos = path.indexOf('.');
   var propName = propPos == -1 ? path : path.substr(0, propPos);
 
   if (modelName.indexOf('-') != -1) {
-    throw 'Unexpected char in block name: ' + modelName;
+    throw "Unexpected char in block name: " + modelName;
   }
   if (propName.indexOf('-') != -1) {
-    throw 'Unexpected char in property name: ' + propName;
+    throw "Unexpected char in property name: " + propName;
   }
 
   // Fastpath
@@ -346,21 +347,21 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
   // gets the writable model when "!readonly" or the readonly model otherwise
   var model;
   if (readonly) {
-    if (typeof defaultValue !== 'undefined') throw 'Cannot use defaultValue in readonly mode!';
-    if (overrideDefault) throw 'Cannot use overrideDefault in readonly mode for ' + modelName + '/' + path + '/' + overrideDefault + '!';
-    if (typeof setcategory !== 'undefined') throw 'Cannot set category for ' + modelName + '/' + path + '/' + setcategory + ' in readonly mode!';
+    if (typeof defaultValue !== 'undefined') throw "Cannot use defaultValue in readonly mode!";
+    if (overrideDefault) throw "Cannot use overrideDefault in readonly mode for " + modelName + "/" + path + "/" + overrideDefault + "!";
+    if (typeof setcategory !== 'undefined') throw "Cannot set category for " + modelName + "/" + path + "/" + setcategory + " in readonly mode!";
     model = _getModelDef(defs, modelName, false, true);
   } else {
-    if (defs[modelName]._writeable === false) console.log('TODO debug use cases for this condition', modelName, path);
+    if (defs[modelName]._writeable === false) console.log("TODO debug use cases for this condition", modelName, path);
     model = _getModelDef(defs, modelName, defs[modelName]._writeable === false);
   }
 
-  if (model === null) throw 'Unexpected model for [' + modelName + ']';
+  if (model === null) throw "Unexpected model for [" + modelName + "]";
 
   // if the property does not exists we have to create it.
   if (typeof model[propName] == 'undefined') {
     // when in readonly mode this cannot be done!
-    if (readonly) throw 'Cannot find path ' + propName + ' for ' + modelName + '!';
+    if (readonly) throw "Cannot find path " + propName + " for " + modelName + "!";
     _modelCreateOrUpdateBlockDef(defs, modelName, propName);
     model = _getModelDef(defs, modelName, false);
   }
@@ -378,7 +379,7 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
       do {
         var prop = mypath.substr(0, propPos);
         if (typeof childModel[prop] == 'undefined') {
-          throw 'Found an unexpected prop ' + prop + ' for model ' + modelName + ' for ' + path;
+          throw "Found an unexpected prop " + prop + " for model " + modelName + " for " + path;
         }
 
         childModel = childModel[prop];
@@ -388,14 +389,14 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
       } while (propPos != -1);
 
       if (typeof childModel[mypath] == 'undefined' || childModel[mypath] === null) {
-        throw 'Found an unexpected path termination ' + mypath + ' for model ' + modelName + ' for ' + path;
+        throw "Found an unexpected path termination " + mypath + " for model " + modelName + " for " + path;
       }
       childModel = childModel[mypath];
     } else {
       childModel = childModel[path];
     }
 
-    if (typeof childModel === 'undefined' || childModel === null) throw 'Unexpected null model for ' + modelName + '/' + within + '/' + fullPath;
+    if (typeof childModel === 'undefined' || childModel === null) throw "Unexpected null model for " + modelName + "/" + within + "/" + fullPath;
 
     if (typeof setcategory !== 'undefined') {
       childModel._category = setcategory;
@@ -403,7 +404,7 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
 
     _increaseUseCount(readonly, childModel);
   } catch (e) {
-    console.error('Property lookup exception', e, modelName, path, templateName, fullPath, defs);
+    console.error("Property lookup exception", e, modelName, path, templateName, fullPath, defs);
     throw e;
   }
 
@@ -414,7 +415,7 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
     var subPath = path.indexOf('.') != -1 ? path.substr(path.indexOf('.')) : '';
 
     // The next code supports only properties with one dot (object.property).
-    if (subPath.indexOf('.', 1) != -1) throw 'TODO unsupported object nesting! ' + path;
+    if (subPath.indexOf('.', 1) != -1) throw "TODO unsupported object nesting! " + path;
 
     var gsPath = defs[modelName]._globalStyle + '.' + propName;
     if (typeof defs[modelName][propName] == 'object' && defs[modelName][propName] !== null && typeof defs[modelName][propName]._globalStyle != 'undefined') {
@@ -431,7 +432,7 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
 
     if (typeof defaultValue !== 'undefined') {
       if (readonly) {
-        throw 'Cannot set a new theme default value (' + defaultValue + ') for ' + gsFullPath.substr(7) + ' while in readonly mode!';
+        throw "Cannot set a new theme default value (" + defaultValue + ") for " + gsFullPath.substr(7) + " while in readonly mode!";
       }
       themeUpdater('default', gsFullPath.substr(7), defaultValue);
     }
@@ -443,17 +444,17 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
 
   if (typeof defaultValue != 'undefined') {
     if (typeof defs[modelName]._defaultValues[path] == 'undefined' || (typeof overrideDefault != 'undefined' && overrideDefault)) {
-      if (readonly) throw 'Cannot set new _defaultValues [1] for ' + path + ' in ' + modelName + '!';
+      if (readonly) throw "Cannot set new _defaultValues [1] for " + path + " in " + modelName + "!";
       defs[modelName]._defaultValues[path] = defaultValue;
     } else {
       if (defaultValue === null) {
         if (readonly && defs[modelName]._defaultValues[path] !== null) {
-          throw 'Cannot set new _defaultValues [2] for ' + path + ' in ' + modelName + '!';
+          throw "Cannot set new _defaultValues [2] for " + path + " in " + modelName + "!";
         }
         // This remove default value. Ugly. (Needs this for defaults in template-lm socialLinksIcon)
         defs[modelName]._defaultValues[path] = null;
       } else if (defs[modelName]._defaultValues[path] != defaultValue) {
-        throw 'Trying to set a new default value for ' + modelName + ' ' + path + ' while it already exists (current: ' + defs[modelName].defaultValues[path] + ', new: ' + defaultValue + ')';
+        throw "Trying to set a new default value for " + modelName + " " + path + " while it already exists (current: " + defs[modelName].defaultValues[path] + ", new: " + defaultValue + ")";
       }
     }
   }
@@ -461,7 +462,7 @@ var modelEnsurePathAndGetBindValue = function (readonly, defs, themeUpdater, roo
   return res;
 };
 
-var generateResultModel = function (templateDef) {
+var generateResultModel = function(templateDef) {
   var defs = templateDef._defs;
   var templateName = templateDef.templateName;
 
@@ -483,5 +484,5 @@ module.exports = {
   generateModel: _generateModel,
   generateResultModel: generateResultModel,
   getDef: _getDef,
-  createOrUpdateBlockDef: _modelCreateOrUpdateBlockDef,
+  createOrUpdateBlockDef: _modelCreateOrUpdateBlockDef
 };
