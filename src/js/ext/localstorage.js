@@ -2,24 +2,38 @@
 /* global global: false */
 var console = require("console");
 var ko = require("knockout");
-var $ = require("jquery");
 
-var lsLoader = function(hash_key, emailProcessorBackend) {
-  var mdStr = global.localStorage.getItem("metadata-" + hash_key);
-  if (mdStr !== null) {
-    var model;
-    var td = global.localStorage.getItem("template-" + hash_key);
-    if (td !== null) model = JSON.parse(td);
-    var md = JSON.parse(mdStr);
-    return {
-      metadata: md,
-      model: model,
-      extension: lsCommandPluginFactory(md, emailProcessorBackend)
-    };
-  } else {
-    throw "Cannot find stored data for "+hash_key;
+var lsLoader = function(id, emailProcessorBackend) {
+  var mdStr = global.localStorage.getItem("metadata-" + id);
+  if (mdStr === null) {
+    mdStr = JSON.stringify({
+      created: new Date(),
+      editorversion: '0.17.5',
+      key: id,
+      name: 'master-template',
+      template: 'templates/master-template/template-master-template.html',
+      templateversion: "1.1.19"
+    });
+    global.localStorage.setItem('metadata-' + id, mdStr);
   }
+  var model;
+  var td = global.localStorage.getItem("template-" + id);
+  if (td !== null) model = JSON.parse(td);
+  var md = JSON.parse(mdStr);
+  return {
+    metadata: md,
+    model: model,
+    extension: lsCommandPluginFactory(md, emailProcessorBackend)
+  };
 };
+
+function sendParentMsg(msg) {
+  global.window.parent.postMessage({
+    html: msg.html,
+    json: msg.json,
+    source: 'mosaico-save'
+  }, '*');
+}
 
 var lsCommandPluginFactory = function(md, emailProcessorBackend) {
   var commandsPlugin = function(mdkey, mdname, viewModel) {
@@ -30,8 +44,11 @@ var lsCommandPluginFactory = function(md, emailProcessorBackend) {
       enabled: ko.observable(true)
     };
     saveCmd.execute = function() {
-      console.log('output? ', viewModel.exportHTML());
-      saveCmd.enabled(false);
+      sendParentMsg({
+        html: viewModel.exportHTML(),
+        json: viewModel.exportJSON(),
+      });
+      saveCmd.enabled(true);
       viewModel.metadata.changed = Date.now();
       if (typeof viewModel.metadata.key == 'undefined') {
         console.warn("Unable to find key in metadata object...", viewModel.metadata);

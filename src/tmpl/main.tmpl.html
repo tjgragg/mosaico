@@ -35,11 +35,6 @@
     </span>
 
     <div class="rightButtons">
-    <!-- ko if: typeof $root.save !== 'undefined' -->
-    <a title="Save template" href="javascript:void(0)" data-bind="attr: { title: $root.t('Save template') }, click: $root.save.execute, clickBubble: false, button: { disabled: !$root.save.enabled(), icons: { primary: 'fa fa-fw fa-cloud-upload' }, label: $root.t($root.save.name), text: true }">SALVA</a>
-    <!-- /ko -->
-    <!-- ko if: typeof $root.test !== 'undefined' -->
-    <!-- /ko -->
     <!-- ko if: typeof $root.download !== 'undefined' -->
     <form id="downloadForm" action="#" method="POST">
     <input type="hidden" name="action" value="download" />
@@ -47,6 +42,9 @@
     <input type="hidden" name="html" id="downloadHtmlTextarea" />
     <a title="Download template" href="javascript:void(0)" data-bind="attr: { title: $root.t('Download template') }, click: $root.download.execute, clickBubble: false, button: { disabled: !$root.download.enabled(), icons: { primary: 'fa fa-fw fa-download' }, label: $root.t($root.download.name), text: true }">DOWNLOAD</a>
     </form>
+    <!-- /ko -->
+    <!-- ko if: typeof $root.save !== 'undefined' -->
+    <a title="Save template" href="javascript:void(0)" data-bind="attr: { title: $root.t('Save template') }, click: $root.save.execute, clickBubble: false, button: { disabled: !$root.save.enabled(), icons: { primary: 'fa fa-fw fa-cloud-upload' }, label: $root.t($root.save.name), text: true }">SAVE</a>
     <!-- /ko -->
     </div>
   </div>
