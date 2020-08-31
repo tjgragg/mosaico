@@ -287,8 +287,6 @@ var _makePush = function() {
   if (arguments.length > 0 && ko.isObservable(arguments[0])) {
     if (typeof arguments[0]._unwrap == 'function') {
       arguments[0] = arguments[0]._unwrap();
-    } else {
-      console.log("WARN: pushing observable with no _unwrap function (TODO remove me, expected condition)");
     }
   }
   if (!ko.isObservable(arguments[0])) {
@@ -304,8 +302,6 @@ var _makeSplice = function() {
   if (arguments.length > 2 && ko.isObservable(arguments[2])) {
     if (typeof arguments[2]._unwrap == 'function') {
       arguments[2] = arguments[2]._unwrap();
-    } else {
-      console.log("WARN: splicing observable with no _unwrap function (TODO remove me, expected condition)");
     }
   }
   if (arguments.length > 2 && !ko.isObservable(arguments[2])) {

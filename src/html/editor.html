@@ -8,24 +8,6 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 
-    <script>
-      // addEventListener support for IE8
-      function bindEvent(element, eventName, eventHandler) {
-        if (element && element.addEventListener) {
-          element.addEventListener(eventName, eventHandler, false);
-        } else if (element.attachEvent) {
-          element.attachEvent('on' + eventName, eventHandler);
-        }
-      }
-
-      var results = document.getElementById('results');
-
-      // Listen to messages from parent window
-      bindEvent(window, 'message', function (e) {
-        results.innerHTML = e.data;
-      });
-    </script>
-
     <script src="rs/mosaico-libs-and-tinymce.min.js?v=__VERSION__"></script>
     <script src="rs/mosaico.min.js?v=__VERSION__"></script>
     <script>

@@ -155,14 +155,19 @@ var init = function(options, customExtensions) {
     var randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     id = randomString.substring(0, 7);
   }
+  var fromPortal = global.location.search.includes('fromPortal=');
   var containsJson = global.location.search.includes('json=');
   var existingjson;
   if (containsJson) {
-    var jsonString = global.location.search.replace('?0.17.5&json=', '');
+    var jsonString = global.location.search.replace('?0.17.5&fromPortal=true&json=', '');
     existingjson = global.atob(jsonString);
     if (existingjson) {
       global.localStorage.setItem('template-'+id, existingjson);
     }
+  }
+  if (fromPortal) {
+    initFromLocalStorage(options, id, customExtensions);
+    return true;
   }
   // Loading from configured template or configured metadata
   if (options && (options.template || options.data)) {
@@ -172,7 +177,7 @@ var init = function(options, customExtensions) {
     } else {
       start(options, options.template, undefined, undefined, customExtensions);
     }
-  } else if (id && (id.length === 7 || id.length === 5)) {
+  } else if (id && id.length === 7) {
     // Loading from LocalStorage (if url hash has a 7chars key)
     initFromLocalStorage(options, id, customExtensions);
   } else if (id) {

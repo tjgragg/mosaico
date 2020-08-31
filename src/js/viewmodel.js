@@ -23,6 +23,16 @@ toastr.options = {
   "hideMethod": "fadeOut"
 };
 
+// this updates the form as desired, but causes hard-refresh every time..
+function updateParentForm(actionType, viewModel) {
+  console.log('update parent form during: ', actionType);
+  global.window.parent.postMessage({
+    html: viewModel.exportHTML(),
+    json: viewModel.exportJSON(),
+    source: 'mosaico-save'
+  }, '*');
+}
+
 function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
 
   var viewModel = {
@@ -125,6 +135,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     var res = parent.blocks.remove(data);
     // TODO This message should be different depending on undo plugin presence.
     viewModel.notifier.info(viewModel.t('Block removed: use undo button to restore it...'));
+    // updateParentForm('viewModel.removeBlock', viewModel);
     return res;
   };
 
@@ -137,6 +148,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     if (typeof unwrapped.id !== 'undefined') unwrapped.id = '';
     // insert the cloned block
     parent.blocks.splice(idx + 1, 0, unwrapped);
+    // updateParentForm('viewModel.duplicateBlock', viewModel);
   };
 
   // block-wysiwyg.tmpl.html
@@ -151,6 +163,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
       parent.blocks.splice(idx, 0, destBlock);
       viewModel.stopMultiple();
     }
+    // updateParentForm('viewModel.moveBlock', viewModel);
   };
 
   // test method, command line use only
@@ -212,6 +225,7 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
     // find the newly added block and select it!
     var added = viewModel.content().mainBlocks().blocks()[pos]();
     viewModel.selectBlock(added, true);
+    // updateParentForm('viewModel.addBlock', viewModel);
     // prevent click propagation (losing url hash - see #43)
     return false;
   };

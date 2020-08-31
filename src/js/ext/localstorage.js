@@ -27,6 +27,7 @@ var lsLoader = function(id, emailProcessorBackend) {
   };
 };
 
+// AMPS-523 post message from iFrame to parent Portal.
 function sendParentMsg(msg) {
   global.window.parent.postMessage({
     html: msg.html,
@@ -40,7 +41,7 @@ var lsCommandPluginFactory = function(md, emailProcessorBackend) {
 
     // console.log("loading from metadata", md, model);
     var saveCmd = {
-      name: 'Save', // l10n happens in the template
+      name: 'sync to form', // l10n happens in the template
       enabled: ko.observable(true)
     };
     saveCmd.execute = function() {
