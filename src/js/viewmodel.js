@@ -1,5 +1,6 @@
 "use strict";
 /* global global: false */
+/* global setInterval: false */
 
 var $ = require("jquery");
 var ko = require("knockout");
@@ -24,6 +25,22 @@ toastr.options = {
 };
 
 function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
+  function updateParentForm(actionType, viewModel) {
+    console.log('update parent form during: ', actionType);
+    global.window.parent.postMessage({
+      html: viewModel.exportHTML(),
+      json: viewModel.exportJSON(),
+      source: 'mosaico-save'
+    }, '*');
+  }
+
+  // Update parent (Portal) every 2-seconds.
+  // when form does update, it causes a hard refresh.
+  // this does not work well when updating text as most text changes are getting lost.
+
+  setInterval(function() {
+    updateParentForm('setInterval', viewModel);
+  }, 2000);
 
   var viewModel = {
     galleryRecent: ko.observableArray([]).extend({

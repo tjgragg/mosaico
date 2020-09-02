@@ -76,7 +76,7 @@ ko.bindingHandlers.scrollIntoView = {
         // element.scrollIntoView(true);
       }
     } catch (e) {
-      console.log("TODO exception scrolling into view", e);
+      // console.log("TODO exception scrolling into view", e);
     }
   }
 };

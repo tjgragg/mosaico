@@ -139,22 +139,39 @@ var start = function(options, templateFile, templateMetadata, jsorjson, customEx
 
 };
 
-var initFromLocalStorage = function(options, hash_key, customExtensions) {
+var initFromLocalStorage = function(options, id, customExtensions) {
+  var template ='http://localhost:9006/templates/versafix-1/template-versafix-1.html';
   try {
-    var lsData = localStorageLoader(hash_key, options.emailProcessorBackend);
+    var lsData = localStorageLoader(id, options.emailProcessorBackend);
     var extensions = typeof customExtensions !== 'undefined' ? customExtensions : [];
     extensions.push(lsData.extension);
-    var template = _canonicalize(lsData.metadata.template);
     start(options, template, lsData.metadata, lsData.model, extensions);
   } catch (e) {
-    console.error("TODO not found ", hash_key, e);
+    start(options, template, undefined, undefined, customExtensions);
   }
 };
 
 var init = function(options, customExtensions) {
+  var id = global.location.hash ? global.location.href.split("#")[1] : undefined;
+  var hash = global.location.hash ? global.location.href.split("#")[1] : undefined;	  if (id === '0') {
 
-  var hash = global.location.hash ? global.location.href.split("#")[1] : undefined;
-
+    var randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    id = randomString.substring(0, 7);
+  }
+  var fromPortal = global.location.search.includes('fromPortal=');
+  var containsJson = global.location.search.includes('json=');
+  var existingjson;
+  if (containsJson) {
+    var jsonString = global.location.search.replace('?0.17.5&fromPortal=true&json=', '');
+    existingjson = global.atob(jsonString);
+    if (existingjson) {
+      global.localStorage.setItem('template-'+id, existingjson);
+    }
+  }
+  if (fromPortal) {
+    initFromLocalStorage(options, id, customExtensions);
+    return true;
+  }
   // Loading from configured template or configured metadata
   if (options && (options.template || options.data)) {
     if (options.data) {
@@ -163,12 +180,12 @@ var init = function(options, customExtensions) {
     } else {
       start(options, options.template, undefined, undefined, customExtensions);
     }
-    // Loading from LocalStorage (if url hash has a 7chars key)
   } else if (hash && hash.length == 7) {
+    // Loading from LocalStorage (if url hash has a 7chars key)
     initFromLocalStorage(options, hash, customExtensions);
     // Loading from template url as hash (if hash is not a valid localstorage key)
-  } else if (hash) {
-    start(options, _canonicalize(hash), undefined, undefined, customExtensions);
+  } else if (id) {
+    start(options, _canonicalize(id), undefined, undefined, customExtensions);
   } else {
     return false;
   }

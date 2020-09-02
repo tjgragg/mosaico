@@ -35,13 +35,9 @@
       var viewModel = {
         showSaved: ko.observable(false),
         edits: ko.observableArray(initialEdits),
-        templates: [{
-          name: 'versafix-1', desc: 'The versatile template'
-        },{
-          name: 'tedc15', desc: 'The TEDC15 template'
-        },{
-          name: 'tutorial', desc: 'The Tutorial'
-        }]
+        templates: [
+          {name: 'versafix-1', desc: 'The versatile template'},
+        ]
       };
 
       viewModel.edits.subscribe(function(newEdits) {
@@ -127,7 +123,7 @@ a, a:link, a:visited {
   outline: 2px solid #333332;
   padding: 2px;
   width: 340px;
-  height: 500px;
+  height: 200px;
   overflow-y: auto;
 }
 .template a:hover {

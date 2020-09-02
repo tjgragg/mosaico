@@ -16,7 +16,6 @@
             "size": null,
             "decoration": null
         },
-        "preheaderLinkOption": "[unsubscribe_link]",
         "longTextStyle": {
             "type": "longTextStyle",
             "face": null,
@@ -26,7 +25,6 @@
             "align": null,
             "linksColor": null
         },
-        "unsubscribeText": "Unsubscribe",
         "webversionText": "View in your browser"
     },
     "sponsor": {
@@ -57,8 +55,6 @@
             "size": null,
             "decoration": null
         },
-        "longText": "<p>Email sent to <a href=\"mailto:[mail]\">[mail]</a></p>",
-        "disiscrivitiText": "Unsubscribe"
     },
     "mainBlocks": {
         "type": "blocks",
