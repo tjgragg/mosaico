@@ -104,7 +104,6 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   };
 
   viewModel.remoteFileProcessor = function(fileObj) {
-    console.log('viewModel.remoteFileProcessor', fileObj);
     if (typeof fileObj.url !== 'undefined') fileObj.url = viewModel.remoteUrlProcessor(fileObj.url);
     if (typeof fileObj.thumbnailUrl !== 'undefined') fileObj.thumbnailUrl = viewModel.remoteUrlProcessor(fileObj.thumbnailUrl);
     // deleteUrl?
@@ -115,19 +114,15 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   viewModel.loadGallery = function() {
     viewModel.galleryLoaded('loading');
     var url = galleryUrl ? galleryUrl : '/upload/';
-    console.log('galleryUrl', galleryUrl);
     // retrieve the full list of remote files
     $.getJSON(url, function(data) {
-      console.log('getjson data', data);
       for (var i = 0; i < data.files.length; i++) {
         data.files[i] = viewModel.remoteFileProcessor(data.files[i]);
       }
       viewModel.galleryLoaded(data.files.length);
       // TODO do I want this call to return relative paths? Or just absolute paths?
       viewModel.galleryRemote(data.files.reverse());
-      console.log('viewmodel? ', viewModel);
     }).fail(function() {
-      console.log('loadgallery fail?');
       viewModel.galleryLoaded(false);
       viewModel.notifier.error(viewModel.t('Unexpected error listing files'));
     });
@@ -494,7 +489,6 @@ function initializeEditor(content, blockDefs, thumbPathConverter, galleryUrl) {
   // viewModel.linkDialog = function() {}: implement this method using "this" to find the input element $(this).val is a writableObservable.
 
   viewModel.loadImage = function(img) {
-    console.log('viewmodel.loadImage', img);
     // push image at top of "recent" gallery
     viewModel.galleryRecent.unshift(img);
     // select recent gallery tab

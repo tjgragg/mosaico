@@ -23,11 +23,9 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 })); 
 
 var listFiles = function (req, options, callback) {
-    console.log('listfiles', options);
     var files = [];
     var counter = 1;
     var finish = function () {
-        console.log('finish? ', files);
         if (!--counter)
             callback(files);
     };
@@ -36,9 +34,7 @@ var listFiles = function (req, options, callback) {
 
     fs.readdir(options.uploadDir, _.bind(function (err, list) {
         _.each(list, function (name) {
-            console.log('file name', name);
             var stats = fs.statSync(options.uploadDir + '/' + name);
-            console.log('isFile? ', stats.isFile());
             if (stats.isFile()) {
                 var file = {
                     name: name,
@@ -68,15 +64,12 @@ var uploadOptions = {
 };
 
 app.get('/upload/', function(req, res) {
-    console.log('app.get /upload/');
+    // getting all the files.
     listFiles(req, uploadOptions, function (files) {
-        console.log('files? ', files);
       res.json({ files: files });
     }); 
 });
 
-// changing this to an anonymous function that calls upload.fileHandler break the behavior.
-// However, this method is throwing an unhandled exception and killing the server.
 app.use('/upload/', upload.fileHandler(uploadOptions));
 
 // imgProcessorBackend + "?src=" + encodeURIComponent(src) + "&method=" + encodeURIComponent(method) + "&params=" + encodeURIComponent(width + "," + height);
