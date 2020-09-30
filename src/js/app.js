@@ -123,7 +123,8 @@ var start = function(options, templateFile, templateMetadata, jsorjson, customEx
     for (var k = 0; k < customExtensions.length; k++) extensions.push(customExtensions[k]);
   extensions.push(fileUploadMessagesExtension);
 
-  var galleryUrl = options.fileuploadConfig ? options.fileuploadConfig.url : '/upload/';
+  var galleryUrl = options.imagesUrl ? options.imagesUrl
+    : options.fileuploadConfig ? options.fileuploadConfig.url : '/upload/';
   applyBindingOptions(options, ko);
 
   // TODO what about appending to another element?

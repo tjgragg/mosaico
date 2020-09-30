@@ -2,16 +2,15 @@
 /* global module: false, console: false, __dirname: false, process: false */
 
 var express = require('express');
-var upload = require('jquery-file-upload-middleware');
-upload.fileHandler = require('./handler');
-
+var axios = require('axios').default;
 var bodyParser = require('body-parser');
-var fs = require('fs');
-var _ = require('lodash');
-var app = express();
 var gmagic = require('gm');
+
 var gm = gmagic.subClass({imageMagick: true});
+var https = require('https');
 var url = require('url');
+
+var app = express();
 
 app.use(require('connect-livereload')({ ignore: [/^\/dl/, /^\/img/] }));
 
@@ -21,59 +20,40 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-var listFiles = function (req, options, callback) {
-  var files = [];
-  var counter = 1;
-  var finish = function () {
-    if (!--counter)
-      callback(files);
-  };
+function getImages(callback) {
+  axios.request({
+    baseURL: 'https://localhost:9443',
+    data: {
+      q: '',
+    },
+    headers: {appId: 2, appAuthKey: 'giphy'},
+    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+    method: 'POST',
+    url: 's3/images/thumbnails/search',
+  }).then(function(res) {
+    var images = res.data.map(function(image) {
+      return {
+        name: image.name,
+        size: undefined,
+        thumbnailUrl: image.thumbnailUrl,
+        url: image.fullSizeUrl,
+      };
+    });
+    callback(images);
+  }).catch(function(e) {
+    console.log('list files e ', e);
+  });
+}
 
-  var uploadHost = req.protocol + '://' + req.get('host');
-
-  fs.readdir(options.uploadDir, _.bind(function (err, list) {
-    _.each(list, function (name) {
-      var stats = fs.statSync(options.uploadDir + '/' + name);
-      if (stats.isFile()) {
-        var file = {
-          name: name,
-          url: uploadHost + options.uploadUrl + '/' + name,
-          size: stats.size
-        };
-        _.each(options.imageVersions, function (value, version) {
-          counter++;
-          fs.exists(options.uploadDir + '/' + version + '/' + name, function (exists) {
-            if (exists)
-              file.thumbnailUrl = uploadHost + options.uploadUrl + '/' + version + '/' + name;
-            finish();
-          });
-        });
-        files.push(file);
-      }
-    }, this);
-    finish();
-  }, this));
-};
-
-var uploadOptions = {
-  tmpDir: '.tmp',
-  uploadDir: './uploads',
-  uploadUrl: '/uploads',
-  imageVersions: { thumbnail: { width: 90, height: 90 } }
-};
-
-app.get('/upload/', function(req, res) {
-  // getting all the files.
-  listFiles(req, uploadOptions, function (files) {
-    res.json({ files: files });
+app.get('/images', function(req, res) {
+  // getting all the images.
+  getImages(function (images) {
+    res.json({ files: images });
   });
 });
 
-app.use('/upload/', upload.fileHandler);
-
 // imgProcessorBackend + "?src=" + encodeURIComponent(src) + "&method=" + encodeURIComponent(method) + "&params=" + encodeURIComponent(width + "," + height);
 app.get('/img/', function(req, res) {
-
   var params = req.query.params.split(',');
 
   if (req.query.method == 'placeholder') {
@@ -113,9 +93,7 @@ app.get('/img/', function(req, res) {
         res.status(404).send('Error: '+err);
       }
     });
-
   }
-
 });
 
 app.post('/dl/', function(req, res) {
@@ -132,21 +110,16 @@ app.post('/dl/', function(req, res) {
   response(req.body.html);
 });
 
-
 // This is needed with grunt-express-server (while it was not needed with grunt-express)
-
 var PORT = process.env.PORT || 3000;
 
 app.use('/templates', express.static(__dirname + '/../templates'));
-app.use('/uploads', express.static(__dirname + '/../uploads'));
 app.use(express.static(__dirname + '/../dist/'));
 
-var server = app.listen( PORT, function() {
+app.listen( PORT, function() {
   var check = gm(100, 100, '#000000');
   check.format(function (err, format) {
     if (err) console.error("ImageMagick failed to run self-check image format detection. Error:", err);
   });
   console.log('Express server listening on port ' + PORT);
 } );
-
-// module.exports = app;
